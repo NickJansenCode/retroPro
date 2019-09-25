@@ -19,7 +19,7 @@ app.use(
 
 app.use(bodyParser.json());
 
-app.use(app.use(express.static(path.join(__dirname, "client/build"))))
+app.use(express.static(path.join(__dirname, "client/build")))
 // Connect to mongoDB. //
 const db = require("./config/keys").mongoURI;
 

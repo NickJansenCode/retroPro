@@ -1,0 +1,9 @@
+.navLink{
+    padding: 17px 14px;
+    font-size: 17px;
+}
+
+.navLink:hover{
+    text-decoration: none;
+    background-color:lightblue;
+}

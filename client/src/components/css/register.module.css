@@ -1,0 +1,11 @@
+.registerForm{
+    margin-top: 2%;
+    box-shadow: 0 5px 8px rgba(0, 0, 0, 0.2), 0 9px 26px 0 rgba(0, 0, 0, 0.19);
+    padding: 5%;
+    border: 2px solid black;
+    border-radius: 12px;
+}
+
+.redtext{
+    color: red;
+}

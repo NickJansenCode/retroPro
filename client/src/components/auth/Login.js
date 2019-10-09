@@ -20,13 +20,16 @@ class Login extends Component{
     componentDidMount() {
         // If logged in and user navigates to Register page, should redirect them to dashboard
         if (this.props.auth.isAuthenticated) {
-          this.props.history.push("/profile");
+            let username = this.props.auth.user.name
+            this.props.history.push(`/profile/` + username);
         }
       }
 
     componentWillReceiveProps(nextProps){
+
         if(nextProps.auth.isAuthenticated){
-            this.props.history.push("/profile");
+            let username = nextProps.auth.user.name
+            this.props.history.push("/profile/" + username);
         }
 
         if (nextProps.errors){

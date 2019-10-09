@@ -15,6 +15,7 @@ import Register from "./components/auth/Register";
 import Login from "./components/auth/Login";
 import PrivateRoute from "./components/auth/PrivateRoute"
 import Profile from "./components/profile/Profile";
+import Game from "./components/game/Game";
 
 
 if (localStorage.jwtToken) {
@@ -41,9 +42,8 @@ class App extends Component {
             <Route exact path="/about" component={About}/>
             <Route exact path="/register" component={Register} />
             <Route exact path="/login" component={Login} />
-            <Switch>
-              <PrivateRoute exact path="/profile" component={Profile} />
-            </Switch>
+            <PrivateRoute exact path="/profile/:username" component={Profile} />
+            <PrivateRoute exact path="/game/:name" component={Game} />
           </div>
         </Router>
       </Provider>

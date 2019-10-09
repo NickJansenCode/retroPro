@@ -6,6 +6,32 @@ const keys = require("../../config/keys");
 const registerValidation = require("../../validation/register");
 const loginValidation = require("../../validation/login");
 const User = require("../../models/User");
+const Game = require("../../models/Game")
+const Collection = require("../../models/Collection")
+
+
+router.get("/getByName/:name", (req, res) => {
+    User.findOne({
+        name: req.params.name
+    })
+    // .populate('gameCollection').populate('items')
+    .populate({
+        path: "gameCollection",
+        populate: {
+            path: "items",
+        }
+    })
+    .then(user => {
+        if (user){
+            res.json({
+                "user": user
+            });
+        }
+        else{
+            return res.status(400).json({ message: "Failed to find user." });
+        }
+    });
+})
 
 /**
  * @route POST api/users/register

@@ -15,11 +15,11 @@ const UserSchema = new Schema({
         required: true
     },
     profilepicture:{
-        type: Buffer,
+        type: String,
         required: false
     },
     headerpicture:{
-        type: Buffer,
+        type: String,
         required: false
     },
     about:{
@@ -30,6 +30,9 @@ const UserSchema = new Schema({
         type: Boolean,
         required: true,
         default: false
+    },
+    gameCollection:{
+        type: Schema.Types.ObjectId, ref: "collection"
     }
 });
 

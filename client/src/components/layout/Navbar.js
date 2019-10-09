@@ -14,6 +14,7 @@ class Navbar extends Component {
     };
 
     render() {
+        let profileLink = `/Profile/${this.props.auth.user.name}`
         return (
             <nav className="navbar navbar-dark navbar-expand-md bg-primary">
                 <a className="navbar-brand" href=".">
@@ -23,6 +24,16 @@ class Navbar extends Component {
                     <span className="navbar-toggler-icon"></span>
                 </button>
                 <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
+                    {this.props.auth.isAuthenticated &&
+                    <ul className="navbar-nav mr-auto">
+                        <li className="nav-item">
+                            <Link className={styles.navLink} to="/" style={{ color: "white" }}>Home</Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link className={styles.navLink} to="/About" style={{ color: "white" }}>About</Link>
+                        </li>   
+                    </ul>
+                    ||
                     <ul className="navbar-nav mr-auto">
                         <li className="nav-item">
                             <Link className={styles.navLink} to="/" style={{ color: "white" }}>Home</Link>
@@ -30,13 +41,16 @@ class Navbar extends Component {
                         <li className="nav-item">
                             <Link className={styles.navLink} to="/About" style={{ color: "white" }}>About</Link>
                         </li>
+
+                        
                         <li className="nav-item">
                             <Link className={styles.navLink} to="/Login" style={{ color: "white" }}>Login</Link>
                         </li>
                         <li className="nav-item">
                             <Link className={styles.navLink} to="/Register" style={{ color: "white" }}>Register</Link>
-                        </li>
+                        </li>   
                     </ul>
+                    } 
                 </div>
                 {this.props.auth.isAuthenticated &&
                     <ul className="navbar-nav navbar-right">
@@ -47,7 +61,7 @@ class Navbar extends Component {
                                      Logged in as {this.props.auth.user.name}
                             </div>
                             <div className="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <Link className="dropdown-item" to="/Profile">Profile</Link>
+                                <Link className="dropdown-item" to={profileLink}>Profile</Link>
                                 <Link className="dropdown-item" to="/Messages">Messages</Link>
                                 <Link className="dropdown-item" to="/FindStore">Find A Store</Link>
                                 <Link className="dropdown-item" to="/Settings">Settings</Link>

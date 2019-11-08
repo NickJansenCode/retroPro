@@ -1,48 +1,46 @@
-const Platform = require("../../models/Platform")
-const Game = require("../../models/Game");
-const express = require("express")
-const router = express.Router()
+const Platform = require('../../models/Platform');
+const Game = require('../../models/Game');
+const express = require('express');
+const router = express.Router();
 
 
-router.post("/", (req, res) => {
-    let gameDetails = {
-        year: req.body.year,
-        name: req.body.name,
-        description: req.body.description,
-        inreviewqueue: true,
-        coverart: req.body.coverart
-    };
+router.post('/', (req, res) => {
+  const gameDetails = {
+    year: req.body.year,
+    name: req.body.name,
+    description: req.body.description,
+    inreviewqueue: true,
+    coverart: req.body.coverart,
+  };
 
-    if (req.body.platform){
-        gameDetails.platform = req.body.platform;
-    }
+  if (req.body.platform) {
+    gameDetails.platform = req.body.platform;
+  }
 
-    let gameToInsert = new Game(gameDetails);
+  const gameToInsert = new Game(gameDetails);
 
-    gameToInsert.save()
-    .then(() => {
-        res.status(200).json({"message": "Game added succesfully!"})
-    })
-    .catch(err => {
-        res.status(400).send({"message": "Failed to insert Game."})
-    });
+  gameToInsert.save()
+      .then(() => {
+        res.status(200).json({'message': 'Game added succesfully!'});
+      })
+      .catch((err) => {
+        res.status(400).send({'message': 'Failed to insert Game.'});
+      });
 });
 
-router.get("/getByName/:name", (req, res) => {
-    Game.findOne({
-        "name": req.params.name
-    })
-    .populate('platform')
-    .then(game => {
-        if (game){
-            res.json(game);
+router.get('/getByName/:name', (req, res) => {
+  Game.findOne({
+    'name': req.params.name,
+  })
+      .populate('platform')
+      .then((game) => {
+        if (game) {
+          res.json(game);
+        } else {
+          return res.status(400).json({message: 'Failed to find game.'});
         }
-        else{
-            return res.status(400).json({ message: "Failed to find game." });
-        }
-    })
-})
-
+      });
+});
 
 
 module.exports = router;

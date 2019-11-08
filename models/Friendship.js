@@ -2,10 +2,10 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const FriendshipSchema = new Schema({
-  reporter: {
+  friendA: {
     type: Schema.Types.ObjectId, ref: 'user',
   },
-  reported: {
+  friendB: {
     type: Schema.Types.ObjectId, ref: 'user',
   },
 });

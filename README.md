@@ -1,11 +1,1 @@
-Package Installation 
-====================
-```
-    npm i bcryptjs body-parser concurrently express is-empty jsonwebtoken mongoose passport passport-jwt validator
-```
-
-Dev Dependencies
-----------------
-```
-    npm i -D nodemon
-```
+This is a school project. Stay up outta my business, ya hear?

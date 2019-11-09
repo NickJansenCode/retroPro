@@ -22,6 +22,7 @@
         "react"
     ],
     "rules": {
-        "max-len":"off"
+        "max-len":"off",
+        "new-cap": "off"
     }
 }

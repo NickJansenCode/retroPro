@@ -2,13 +2,12 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const keys = require('../../config/keys');
 const registerValidation = require('../../validation/register');
 const loginValidation = require('../../validation/login');
 const User = require('../../models/User');
 const Game = require('../../models/Game');
 const Collection = require('../../models/Collection');
-
+require('dotenv').config();
 
 router.get('/getByName/:name', (req, res) => {
   User.findOne({
@@ -100,7 +99,7 @@ router.post('/login', (req, res) => {
         // Sign token
         jwt.sign(
             payload,
-            keys.secret,
+            process.env.JWTSECRET,
             {
               expiresIn: 31556926, // 1 year in seconds
             },

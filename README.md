@@ -1,1 +1,1 @@
-This is a school project. Stay up outta my business, ya hear?
+This is a school project. Stay up outta my business, ya hear? You gotta make a .env file and set up the environment variables. I'm not gonna tell you how though.

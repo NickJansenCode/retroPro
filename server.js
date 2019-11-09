@@ -6,8 +6,9 @@ const passport = require('passport');
 const users = require('./routes/api/users');
 const games = require('./routes/api/game');
 const platforms = require('./routes/api/platform');
-const cors = require('cors');
 const path = require('path');
+const port = 5000;
+require('dotenv').config();
 
 // Initialize the application. //
 const app = express();
@@ -21,12 +22,8 @@ app.use(
 
 app.use(bodyParser.json());
 
-// app.use(express.static(path.join(__dirname, "client/build")))
-// Connect to mongoDB. //
-const db = require('./config/keys').mongoURI;
-
 mongoose
-    .connect(db, {
+    .connect(process.env.MONGOURI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     })
@@ -41,10 +38,14 @@ app.use('/api/users', users);
 app.use('/api/games', games);
 app.use('/api/platforms', platforms);
 
-const port = process.env.PORT || 5000;
+// If we are in production, serve all requests using the client/build directory.
+if (process.env.ENVIRONMENT == 'production') {
+  app.use(express.static(path.join(__dirname, 'client/build')));
 
-// app.get("*", (req, res) => {
-//     res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
-// });
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+  });
+}
+
 
 app.listen(port, () => console.log(`Server running on port ${port}!`));

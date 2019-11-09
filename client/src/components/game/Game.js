@@ -58,13 +58,13 @@ export default class Game extends Component{
                         </ul>
 
                         <div className="tab-content">
-                            <div className="tab-pane container active" id="overview">
+                            <div className="tab-pane container-fluid active" id="overview">
                                 {this.state.game.description}
                             </div>
-                            <div className="tab-pane container fade" id="comments">
+                            <div className="tab-pane container-fluid fade" id="comments">
                                 <h3>Comments Menu</h3>
                             </div>
-                            <div className="tab-pane container fade" id="reviews">
+                            <div className="tab-pane container-fluid fade" id="reviews">
                                 <h3>Reviews Menu</h3>
                             </div>
                         </div>    

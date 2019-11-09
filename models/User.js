@@ -40,7 +40,8 @@ const UserSchema = new Schema({
   },
   profilepicture: {
     type: String,
-    required: false,
+    required: true,
+    default: 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png',
   },
   headerpicture: {
     type: String,
@@ -48,7 +49,8 @@ const UserSchema = new Schema({
   },
   about: {
     type: String,
-    required: false,
+    required: true,
+    default: 'This user hasn\'t uploaded a description!',
   },
   isbanned: {
     type: Boolean,

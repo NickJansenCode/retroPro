@@ -37,7 +37,7 @@ class Navbar extends Component {
         let profileLink = `/Profile/${this.props.auth.user.name}`
         return (
             <nav className="navbar navbar-dark navbar-expand-md bg-primary">
-                <a className="navbar-brand" href=".">
+                <a className="navbar-brand" href="/">
                     retroPro Logo Here
                 </a>
                 <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">

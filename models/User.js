@@ -16,6 +16,7 @@ const UserSchema = new Schema({
   }],
   gamesPlayed: [{
     type: Schema.Types.ObjectId, ref: 'game',
+    required: true,
   }],
   passwordrecovery: [{
     type: Schema.Types.ObjectId, ref: 'passwordrecovery',

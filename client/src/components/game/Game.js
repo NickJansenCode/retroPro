@@ -1,26 +1,97 @@
 import React, { Component } from "react";
 import axios from "axios";
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 
-
-export default class Game extends Component{
+class Game extends Component{
     constructor(){
         super();
         this.state = {
-            "game": "",
-            "platform": ""
+            game: "",
+            platform: "",
+            gamePlayed: "",
+            gameInCollection: "",
+            gameInWishlist: "",
         };
     }
 
     componentDidMount(){
         
-        axios.get(`/api/games/getByName/${this.props.match.params.name}`)
-        .then(res => {
-            console.log(res);
-            this.setState({
-                "game" : res.data,
-                "platform": res.data.platform.name
-            });
-        });
+        let user = this.props.auth.user;
+        let game = this.props.match.params.name;
+        let postData = {
+            user: user,
+            game: game,
+        } 
+
+        axios.post(`/api/games/loadGamePageData`, postData)
+            .then(res => {
+                console.log(res)
+                this.setState({
+                    game: res.data.game,
+                    platform: res.data.game.platform.name,
+                    gamePlayed: res.data.gamePlayed,
+                    gameInCollection: res.data.gameInCollection,
+                    gameInWishlist: res.data.gameInWishlist
+                })
+            })
+    }
+
+    toggleGamePlayed = e => {
+        e.preventDefault()
+
+        let user = this.props.auth.user;
+        let game = this.props.match.params.name;
+        let postData = {
+            user: user,
+            game: game,
+            played: this.state.gamePlayed
+        } 
+
+        axios.post('/api/games/toggleGamePlayed', postData)
+            .then(res => {
+                this.setState({
+                    gamePlayed: res.data
+                })
+            })
+    }
+
+    toggleGameInCollection = e => {
+        e.preventDefault()
+
+        let user = this.props.auth.user;
+        let game = this.props.match.params.name;
+        let postData = {
+            user: user,
+            game: game,
+            inCollection: this.state.gameInCollection
+        }      
+        
+        axios.post('/api/games/toggleGameInCollection', postData)
+            .then(res => {
+                this.setState({
+                    gameInCollection: res.data
+                })
+            })
+    }
+
+    toggleGameInWishlist = e => {
+        e.preventDefault()
+
+        let user = this.props.auth.user;
+        let game = this.props.match.params.name;
+        let postData = {
+            user: user,
+            game: game,
+            inWishlist: this.state.gameInWishlist
+        }      
+        
+        axios.post('/api/games/toggleGameInWishlist', postData)
+            .then(res => {
+                this.setState({
+                    gameInWishlist: res.data
+                })
+            })
     }
 
     render(){
@@ -32,16 +103,25 @@ export default class Game extends Component{
                         <h3>{this.state.game.name}</h3>
                         <span>{this.state.platform}, {this.state.game.year}</span>
                         <div className="mt-2">
-                            <button className="btn btn-primary btn-large">I Have Played This Game</button>
+                            {this.state.gamePlayed == false
+                            && <button onClick={this.toggleGamePlayed} className="btn btn-primary btn-large">I Have Played This Game</button>
+                            || <button onClick={this.toggleGamePlayed} className="btn btn-danger btn-large">I Have Not Played This Game</button> 
+                            }
                         </div>
                         <div className="mt-2">
-                            <button className="btn btn-primary btn-large">Add Game To Collection</button>
+                            {this.state.gameInCollection == false && 
+                                <button onClick={this.toggleGameInCollection} className="btn btn-primary btn-large">Add Game To Collection</button>
+                                || 
+                                <button onClick={this.toggleGameInCollection} className="btn btn-danger btn-large">Remove Game From Collection</button>
+                            }
                         </div>
                         <div className="mt-2">
-                            <button className="btn btn-primary btn-large">Add Game to Wishlist</button>
-                        </div>
-                        <div className="mt-2">
-                            <button className="btn btn-primary btn-large">Share Game</button>
+
+                            {this.state.gameInWishlist == false && 
+                                <button onClick={this.toggleGameInWishlist} className="btn btn-primary btn-large">Add Game To Wishlist</button>
+                                || 
+                                <button onClick={this.toggleGameInWishlist} className="btn btn-danger btn-large">Remove Game From Wishlist</button>
+                            }
                         </div>
                     </div>
                     <div className="col-md-8">                   
@@ -74,3 +154,15 @@ export default class Game extends Component{
         )
     }
 }
+
+Game.propTypes = {
+    auth: PropTypes.object.isRequired
+};
+
+const mapStateToProps = state => ({
+    auth: state.auth
+});
+
+export default connect(
+    mapStateToProps,
+)(Game);

@@ -18,6 +18,7 @@ import PasswordRecovery from "./components/auth/PasswordRecovery"
 import PrivateRoute from "./components/auth/PrivateRoute"
 import Profile from "./components/profile/Profile";
 import Game from "./components/game/Game";
+import Search from "./components/search/search"
 
 
 if (localStorage.jwtToken) {
@@ -45,6 +46,7 @@ class App extends Component {
             <Route exact path="/register" component={Register} />
             <Route exact path="/login" component={Login} />
             <Route exact path="/passwordrecovery" component={PasswordRecovery}/>
+            <PrivateRoute exact path="/search/:searchQuery" component={Search}/>
             <PrivateRoute exact path="/profile/:username" component={Profile} />
             <PrivateRoute exact path="/game/:name" component={Game} />
           </div>

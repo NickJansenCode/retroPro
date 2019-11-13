@@ -10,6 +10,16 @@ const Collection = require('../../models/Collection');
 const PasswordRecovery = require('../../models/PasswordRecovery');
 require('dotenv').config();
 
+router.get('/search/:name', (req, res) => {
+  User.find({'name': {$regex: '.*' + req.params.name + '.*', $options: 'i'}})
+      .then(((users) => {
+        res.status(200).json(users);
+      }))
+      .catch((err) => {
+        res.status(500).json(err);
+      });
+});
+
 router.get('/getByName/:name', (req, res) => {
   User.findOne({
     name: req.params.name,

@@ -4,6 +4,16 @@ const express = require('express');
 const router = express.Router();
 
 
+router.get('/search/:name', (req, res) => {
+  Game.find({'name': {$regex: '.*' + req.params.name + '.*', $options: 'i'}, 'inreviewqueue': false})
+      .then(((games) => {
+        res.status(200).json(games);
+      }))
+      .catch((err) => {
+        res.status(500).json(err);
+      });
+});
+
 router.post('/', (req, res) => {
   const gameDetails = {
     year: req.body.year,

@@ -2,12 +2,12 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
-  gameCollection: {
-    type: Schema.Types.ObjectId, ref: 'collection',
-  },
-  wishlist: {
-    type: Schema.Types.ObjectId, ref: 'wishlist',
-  },
+  gameCollection: [{
+    type: Schema.Types.ObjectId, ref: 'game',
+  }],
+  wishlist: [{
+    type: Schema.Types.ObjectId, ref: 'game',
+  }],
   lists: [{
     type: Schema.Types.ObjectId, ref: 'list',
   }],
@@ -23,6 +23,8 @@ const UserSchema = new Schema({
   }],
   role: {
     type: Schema.Types.ObjectId, ref: 'role',
+    required: true,
+    default: '5dcc7cc1d0525b0a30cfb1f1',
   },
   settings: {
     type: Schema.Types.ObjectId, ref: 'settings',

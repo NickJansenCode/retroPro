@@ -88,10 +88,13 @@ class Navbar extends Component {
                             </div>
                             <div className="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <Link className="dropdown-item" to={profileLink}>Profile</Link>
-                                <Link className="dropdown-item" to="/Messages">Messages</Link>
+                                {/* <Link className="dropdown-item" to="/Messages">Messages</Link> */}
                                 <Link className="dropdown-item" to="/FindStore">Find A Store</Link>
                                 <Link className="dropdown-item" to="/Settings">Settings</Link>
                                 <Link className="dropdown-item" to="/Submit">Submit A Game</Link>
+                                {this.props.auth.user.role == "Admin" &&
+                                    <Link className="dropdown-item" to="/Admin">Admin Dashboard</Link>
+                                }
                                 <Link className="dropdown-item" to="/" onClick={this.onLogoutClick}>
                                     Log Out
                                 </Link>

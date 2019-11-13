@@ -8,6 +8,7 @@ const users = require('./routes/api/users');
 const games = require('./routes/api/game');
 const platforms = require('./routes/api/platform');
 const recoveryQuestions = require('./routes/api/recoveryQuestion');
+const roles = require('./routes/api/role');
 
 const path = require('path');
 const port = 5000;
@@ -41,6 +42,7 @@ app.use('/api/users', users);
 app.use('/api/games', games);
 app.use('/api/platforms', platforms);
 app.use('/api/recoveryQuestions', recoveryQuestions);
+app.use('/api/roles', roles);
 
 // If we are in production, serve all requests using the client/build directory.
 if (process.env.ENVIRONMENT == 'production') {

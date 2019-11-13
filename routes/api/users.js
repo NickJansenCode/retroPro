@@ -7,6 +7,7 @@ const loginValidation = require('../../validation/login');
 const User = require('../../models/User');
 const Game = require('../../models/Game');
 const Collection = require('../../models/Collection');
+const PasswordRecovery = require('../../models/PasswordRecovery');
 require('dotenv').config();
 
 router.get('/getByName/:name', (req, res) => {
@@ -23,11 +24,45 @@ router.get('/getByName/:name', (req, res) => {
       .then((user) => {
         if (user) {
           res.json({
-            'user': user,
+            user: user,
           });
         } else {
-          return res.status(400).json({message: 'Failed to find user.'});
+          return res
+              .status(400)
+              .json({message: 'Failed to find user.'});
         }
+      });
+});
+
+/**
+ * @route GET api/users/getForrPasswordRecovery
+ * @desc Retrieves password recovery options for user
+ */
+router.get('/getForPasswordRecovery/:email', (req, res) => {
+  User.findOne({
+    email: req.params.email,
+  })
+      .populate({
+        path: 'passwordrecovery',
+        populate: {
+          path: 'question',
+        },
+      })
+      .then((user) => {
+        if (!user) {
+          return res
+              .status(400)
+              .json({message: 'Failed to find user.'});
+        }
+
+        const passwordRecoveryData = user.passwordrecovery.map((item) => {
+          return {
+            text: item.question.text,
+            answer: item.answer,
+          };
+        });
+
+        res.json(passwordRecoveryData);
       });
 });
 
@@ -45,28 +80,66 @@ router.post('/register', (req, res) => {
 
   User.findOne({
     email: req.body.email,
-  })
-      .then((user) => {
-        if (user) {
-          return res.status(400).json({email: 'Email already exists.'});
-        } else {
+  }).then((user) => {
+    if (user) {
+      return res.status(400).json({email: 'Email already exists.'});
+    } else {
+      const passwordRecovery1 = new PasswordRecovery({
+        question: req.body.recoveryQuestion1ID,
+        answer: req.body.recoveryQuestion1Answer,
+      });
+
+      const passwordRecovery2 = new PasswordRecovery({
+        question: req.body.recoveryQuestion2ID,
+        answer: req.body.recoveryQuestion2Answer,
+      });
+
+      passwordRecovery1.save().then((recovery1) => {
+        passwordRecovery2.save().then((recovery2) => {
           const newUser = new User({
             name: req.body.name,
             email: req.body.email,
             password: req.body.password,
+            passwordrecovery: [recovery1._id, recovery2._id],
           });
 
           bcrypt.genSalt(10, (err, salt) => {
             bcrypt.hash(newUser.password, salt, (err, hash) => {
               if (err) throw err;
               newUser.password = hash;
-              newUser.save()
-                  .then((user) => res.json(user))
+              newUser
+                  .save()
+                  .then((user) => {
+                    res.json(user);
+                  })
                   .catch((err) => console.log(err));
             });
           });
-        }
+        });
       });
+    }
+  });
+});
+
+router.post('/updatePassword', (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password;
+
+  User.findOne({email}).then((user) => {
+    if (!user) {
+      res.status(400).json('User not found.');
+    }
+
+    bcrypt.genSalt(10, (err, salt) => {
+      bcrypt.hash(password, salt, (err, hash) => {
+        if (err) throw err;
+        user.password = hash;
+
+        user.save();
+        return res.status(200).json('Success');
+      });
+    });
+  });
 });
 
 // @route POST api/users/login

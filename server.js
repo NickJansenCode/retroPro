@@ -3,9 +3,12 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const passport = require('passport');
+
 const users = require('./routes/api/users');
 const games = require('./routes/api/game');
 const platforms = require('./routes/api/platform');
+const recoveryQuestions = require('./routes/api/recoveryQuestion');
+
 const path = require('path');
 const port = 5000;
 require('dotenv').config();
@@ -37,6 +40,7 @@ require('./config/passport')(passport);
 app.use('/api/users', users);
 app.use('/api/games', games);
 app.use('/api/platforms', platforms);
+app.use('/api/recoveryQuestions', recoveryQuestions);
 
 // If we are in production, serve all requests using the client/build directory.
 if (process.env.ENVIRONMENT == 'production') {

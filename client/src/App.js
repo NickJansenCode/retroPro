@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
+import { Redirect } from 'react-router-dom';
 import jwt_decode from "jwt-decode";
 import setAuthToken from "./utils/setAuthToken";
 import { setCurrentUser, logoutUser } from "./actions/authActions";
@@ -13,6 +14,7 @@ import Landing from "./components/layout/Landing";
 import About from "./components/layout/About";
 import Register from "./components/auth/Register";
 import Login from "./components/auth/Login";
+import PasswordRecovery from "./components/auth/PasswordRecovery"
 import PrivateRoute from "./components/auth/PrivateRoute"
 import Profile from "./components/profile/Profile";
 import Game from "./components/game/Game";
@@ -42,6 +44,7 @@ class App extends Component {
             <Route exact path="/about" component={About}/>
             <Route exact path="/register" component={Register} />
             <Route exact path="/login" component={Login} />
+            <Route exact path="/passwordrecovery" component={PasswordRecovery}/>
             <PrivateRoute exact path="/profile/:username" component={Profile} />
             <PrivateRoute exact path="/game/:name" component={Game} />
           </div>

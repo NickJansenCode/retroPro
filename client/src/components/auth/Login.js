@@ -100,6 +100,12 @@ class Login extends Component{
                                 </button>
                             </div>
                         </form>
+                        <div className="text-center">
+                            <Link to="/Register">Don't have an account?</Link>
+                        </div>
+                        <div className="text-center">
+                            <Link to="/PasswordRecovery">Forgot your password?</Link>
+                        </div>
                     </div>
                 </div>
             </div>

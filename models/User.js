@@ -17,11 +17,12 @@ const UserSchema = new Schema({
   gamesPlayed: [{
     type: Schema.Types.ObjectId, ref: 'game',
   }],
+  passwordrecovery: [{
+    type: Schema.Types.ObjectId, ref: 'passwordrecovery',
+    required: true,
+  }],
   role: {
     type: Schema.Types.ObjectId, ref: 'role',
-  },
-  passwordrecovery: {
-    type: Schema.Types.ObjectId, ref: 'passwordrecovery',
   },
   settings: {
     type: Schema.Types.ObjectId, ref: 'settings',

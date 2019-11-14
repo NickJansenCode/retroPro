@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const ReviewSchema = new Schema({
   reviewer: {
-    type: Schema.Types.ObjectId, ref: 'user',
+    type: Schema.Types.ObjectId, ref: 'users',
   },
   rating: {
     type: Number,
@@ -15,7 +15,7 @@ const ReviewSchema = new Schema({
     type: String,
   },
   timestamp: {
-    type: Number,
+    type: Date,
   },
 });
 

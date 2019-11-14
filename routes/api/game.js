@@ -47,7 +47,12 @@ router.post('/loadGamePageData', (req, res) => {
           path: 'commenter',
         },
       })
-      .populate('reviews')
+      .populate({
+        path: 'reviews',
+        populate: {
+          path: 'reviewer',
+        }
+      })
       .then((game) => {
         if (!game) {
           return res.status(400).json({message: 'Failed to find game.'});
@@ -147,6 +152,34 @@ router.post('/addComment', (req, res) => {
               })
               .then((data) => {
                 res.status(200).json(data.comments);
+              });
+        });
+  });
+});
+
+router.post('/addReview', (req, res) => {
+  const reviewDetails = {
+    reviewer: req.body.userId,
+    rating: req.body.rating,
+    title: req.body.reviewTitle,
+    text: req.body.reviewText,
+    timestamp: req.body.timestamp,
+  };
+
+  const reviewToInsert = new Review(reviewDetails);
+
+  reviewToInsert.save().then((review) => {
+    Game.findByIdAndUpdate(req.body.gameId, {$push: {reviews: review._id}})
+        .then(() => {
+          Game.findOne({_id: req.body.gameId})
+              .populate({
+                path: 'reviews',
+                populate: {
+                  path: 'reviewer',
+                },
+              })
+              .then((data) => {
+                res.status(200).json(data.reviews);
               });
         });
   });

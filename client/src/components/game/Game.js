@@ -12,11 +12,15 @@ class Game extends Component{
             gamePlayed: "",
             gameInCollection: "",
             gameInWishlist: "",
+            comments: [],
+            reviews: [],
+            commentText: "",
+            errors: {}
         };
     }
 
     componentDidMount(){
-        
+        console.log(this.props.auth.user)
         let user = this.props.auth.user;
         let game = this.props.match.params.name;
         let postData = {
@@ -32,7 +36,9 @@ class Game extends Component{
                     platform: res.data.game.platform.name,
                     gamePlayed: res.data.gamePlayed,
                     gameInCollection: res.data.gameInCollection,
-                    gameInWishlist: res.data.gameInWishlist
+                    gameInWishlist: res.data.gameInWishlist,
+                    comments: res.data.game.comments,
+                    reviews: res.data.game.reviews
                 })
             })
     }
@@ -94,6 +100,44 @@ class Game extends Component{
             })
     }
 
+    submitComment = e => {
+        e.preventDefault()
+
+        if (this.state.commentText == ""){
+            this.setState({
+                errors: {
+                    comment: "Comment text field is required."
+                }
+            })
+            return
+        }
+        else{
+            let postData = {
+                userId: this.props.auth.user.id,
+                comment: this.state.commentText,
+                gameId: this.state.game._id,
+                timestamp: new Date()
+            }
+            axios.post("/api/games/addComment", postData)
+                .then(res => {
+                    this.setState({
+                        commentText: "",
+                        comments: res.data,
+                        errors: {
+
+                        }
+                    })
+                })
+        }
+
+    }
+
+    onChange = e => {
+        this.setState({
+            [e.target.id]: e.target.value
+        });
+    }
+
     render(){
         return(
             <div className="container-fluid mt-2">
@@ -142,10 +186,51 @@ class Game extends Component{
                                 {this.state.game.description}
                             </div>
                             <div className="tab-pane container-fluid fade" id="comments">
-                                <h3>Comments Menu</h3>
+                                <div className="row mt-2">
+                                    <form className="col-2" onSubmit={this.submitComment}>
+                                        <div className="form-group">
+                                            <img src={this.props.auth.user.profilePicture} height="125px"></img>
+                                            <button type="submit" className="btn btn-primary mt-1">
+                                                Submit Comment
+                                            </button>
+                                        </div>
+                                    </form>
+                                    <div className="col-10">
+                                        <textarea id="commentText" placeholder="Comment Text..." type="text" rows="6" value={this.state.commentText} onChange={this.onChange} className="form-control"></textarea>
+                                        <span className="text-danger">
+                                            {this.state.errors.comment}
+                                        </span>                                    
+                                    </div>
+                                </div>
+                                <hr/>
+                                {
+                                    this.state.comments.length == 0 &&
+                                    <p class="text-muted">This game has no comments! Be the first to add a comment.</p>
+                                    ||
+                                    this.state.comments.sort((a, b) => (a.timestamp < b.timestamp) ? 1 : -1).map(comment => {
+                                        let timeString = comment.timestamp.slice(0, comment.timestamp.indexOf("T"))
+                                        return (
+                                            <div className="row mt-2">
+                                                <div className="col-2 no-gutters p-0">
+                                                    <img src={comment.commenter.profilepicture} height="100px"/>
+                                                </div>
+                                                <div className="col-3">
+                                                    <h5>{comment.commenter.name}</h5>
+                                                    <p class="text-muted">{timeString}</p>
+                                                </div>
+                                                <div className="col-7 overflow-auto">
+                                                    <p>{comment.text}</p>
+                                                </div>
+                                            </div>
+                                        )
+                                    })
+                                }
                             </div>
                             <div className="tab-pane container-fluid fade" id="reviews">
-                                <h3>Reviews Menu</h3>
+                                {
+                                    this.state.reviews.length == 0 &&
+                                    <p class="text-muted">This game has no reviews! Be the first to add a review.</p>
+                                }
                             </div>
                         </div>    
                     </div>

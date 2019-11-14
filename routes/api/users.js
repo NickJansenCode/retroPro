@@ -183,6 +183,7 @@ router.post('/login', (req, res) => {
               id: user.id,
               name: user.name,
               role: user.role.name,
+              profilePicture: user.profilepicture,
             };
             // Sign token
             jwt.sign(

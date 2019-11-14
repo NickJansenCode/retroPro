@@ -3,16 +3,13 @@ const Schema = mongoose.Schema;
 
 const GameCommentSchema = new Schema({
   commenter: {
-    type: Schema.Types.ObjectId, ref: 'user',
-  },
-  game: {
-    type: Schema.Types.ObjectId, ref: 'game',
+    type: Schema.Types.ObjectId, ref: 'users',
   },
   text: {
     type: String,
   },
   timestamp: {
-    type: Number,
+    type: Date,
   },
 });
 

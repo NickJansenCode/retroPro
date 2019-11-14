@@ -1,6 +1,8 @@
 const Platform = require('../../models/Platform');
 const Game = require('../../models/Game');
 const User = require('../../models/User');
+const Review = require('../../models/Review');
+const Comment = require('../../models/GameComment');
 const express = require('express');
 const router = express.Router();
 
@@ -20,13 +22,9 @@ router.post('/', (req, res) => {
     year: req.body.year,
     name: req.body.name,
     description: req.body.description,
-    inreviewqueue: true,
+    platform: req.body.platformId,
     coverart: req.body.coverart,
   };
-
-  if (req.body.platform) {
-    gameDetails.platform = req.body.platform;
-  }
 
   const gameToInsert = new Game(gameDetails);
 
@@ -35,27 +33,21 @@ router.post('/', (req, res) => {
         res.status(200).json({'message': 'Game added succesfully!'});
       })
       .catch((err) => {
+        console.log(err);
         res.status(400).send({'message': 'Failed to insert Game.'});
       });
 });
 
-// router.get('/getByName/:name', (req, res) => {
-//   Game.findOne({
-//     'name': req.params.name,
-//   })
-//       .populate('platform')
-//       .then((game) => {
-//         if (game) {
-//           res.json(game);
-//         } else {
-//           return res.status(400).json({message: 'Failed to find game.'});
-//         }
-//       });
-// });
-
 router.post('/loadGamePageData', (req, res) => {
   Game.findOne({'name': req.body.game})
       .populate('platform')
+      .populate({
+        path: 'comments',
+        populate: {
+          path: 'commenter',
+        },
+      })
+      .populate('reviews')
       .then((game) => {
         if (!game) {
           return res.status(400).json({message: 'Failed to find game.'});
@@ -132,6 +124,32 @@ router.post('/toggleGameInWishlist', (req, res) => {
           }
         }
       });
+});
+
+router.post('/addComment', (req, res) => {
+  const commentDetails = {
+    commenter: req.body.userId,
+    text: req.body.comment,
+    timestamp: req.body.timestamp,
+  };
+
+  const commentToInsert = new Comment(commentDetails);
+
+  commentToInsert.save().then((comment) => {
+    Game.findByIdAndUpdate(req.body.gameId, {$push: {comments: comment._id}})
+        .then(() => {
+          Game.findOne({_id: req.body.gameId})
+              .populate({
+                path: 'comments',
+                populate: {
+                  path: 'commenter',
+                },
+              })
+              .then((data) => {
+                res.status(200).json(data.comments);
+              });
+        });
+  });
 });
 
 

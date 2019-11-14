@@ -5,9 +5,6 @@ const ReviewSchema = new Schema({
   reviewer: {
     type: Schema.Types.ObjectId, ref: 'user',
   },
-  game: {
-    type: Schema.Types.ObjectId, ref: 'game',
-  },
   rating: {
     type: Number,
   },

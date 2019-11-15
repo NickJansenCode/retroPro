@@ -9,6 +9,10 @@ const router = express.Router();
 
 router.get('/search/:name', (req, res) => {
   Game.find({'name': {$regex: '.*' + req.params.name + '.*', $options: 'i'}, 'inreviewqueue': false})
+      .populate({
+        path: 'reviews',
+        select: 'rating'
+      })
       .then(((games) => {
         res.status(200).json(games);
       }))
@@ -22,7 +26,7 @@ router.post('/', (req, res) => {
     year: req.body.year,
     name: req.body.name,
     description: req.body.description,
-    platform: req.body.platformId,
+    platform: req.body.platform,
     coverart: req.body.coverart,
   };
 

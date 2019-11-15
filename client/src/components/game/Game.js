@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Link } from "react-router-dom"
 import axios from "axios";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
@@ -330,6 +331,7 @@ class Game extends Component {
                         0,
                         comment.timestamp.indexOf("T")
                       );
+                      let profileLink = `/Profile/${comment.commenter.name}`;
                       return (
                         <div className="row mt-2">
                           <div className="col-2 no-gutters p-0">
@@ -339,7 +341,7 @@ class Game extends Component {
                             />
                           </div>
                           <div className="col-3">
-                            <h5>{comment.commenter.name}</h5>
+                            <Link to={profileLink}><h5>{comment.commenter.name}</h5></Link>
                             <p class="text-muted">{timeString}</p>
                           </div>
                           <div className="col-7 overflow-auto">
@@ -447,6 +449,7 @@ class Game extends Component {
                         0,
                         review.timestamp.indexOf("T")
                       );
+                      let profileLink = `/Profile/${review.reviewer.name}`;
                       return (
                         <div className="container-fluid">
                           <div className="row mt-2">
@@ -457,7 +460,7 @@ class Game extends Component {
                               />
                             </div>
                             <div className="col-3 n-gutters p-0">
-                              <h5>{review.reviewer.name}</h5>
+                              <Link to={profileLink}><h5>{review.reviewer.name}</h5></Link>
                               <p class="text-muted">{timeString}</p>
                               <span style={{ fontSize: 14 }}>
                                 <StarRatingComponent

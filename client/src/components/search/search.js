@@ -92,9 +92,9 @@ class Search extends Component {
                             let gameAverage = Math.round((game.reviews.reduce((total, next) => total + next.rating, 0) / game.reviews.length) *2 ) / 2 
                             return (
                                 <Link to={gameLink}>
-                                    <div className="row mt-2">
+                                    <div className="row mt-3">
                                         <div className="col-4">
-                                            <img height="auto" src={game.coverart}></img>
+                                            <img height="auto" width="100%" src={game.coverart}></img>
                                         </div>
                                     
                                         <div className="col-8 container">

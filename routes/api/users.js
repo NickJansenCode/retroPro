@@ -28,7 +28,7 @@ router.get('/getByName/:name', (req, res) => {
       .populate({
         path: 'gameCollection',
         populate: {
-          path: 'items',
+          path: 'reviews',
         },
       })
       .then((user) => {

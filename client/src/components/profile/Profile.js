@@ -17,6 +17,7 @@ class Profile extends Component {
 		this.state = {
             user: "",
             gameCollection: [],
+            wishlist: [],
 			highlights: [],
 			lists: []
 		};
@@ -30,6 +31,7 @@ class Profile extends Component {
 				this.setState({
                     user: res.data.user,
                     gameCollection: res.data.user.gameCollection,
+                    wishlist: res.data.user.wishlist,
 					highlights: res.data.user.highlights,
 					lists: res.data.user.lists
 				});
@@ -257,7 +259,85 @@ class Profile extends Component {
                         }
 					</div>
 					<div className="tab-pane fade" id="wishlist">
-						<h3>Wishlist Menu</h3>
+                    {
+                            this.state.wishlist.length == 0 &&
+                            (
+                                <div className="justify-content-center">
+                                    <p className="text-muted">
+                                        This user doesn't have any items in their wishlist... :'(
+                                    </p>
+                                </div>
+                            )
+                            ||
+                            (
+                                <div className="row">
+                                    {this.state.wishlist.map(game => {
+                                        let gameLink = "/Game/" + game.name;
+                                        let gameAverage = Math.round((game.reviews.reduce((total, next) => total + next.rating, 0) / game.reviews.length) *2 ) / 2 
+                                        
+                                        return (
+                                            <div className="col-xs-12 col-sm-6 col-md-3 mt-3">
+                                                <Link to={gameLink}>
+                                                <div className="row justify-content-center">
+                                                    <img className="col-xs-12" height="150vh" src={game.coverart}></img>
+                                                </div>
+                                                <div className="row text-center">
+                                                    <div className="col-12">
+                                                        {game.name}
+                                                    </div>
+                                                </div>
+                                                </Link>
+                                                <div className="row text-center">
+
+                                                    <div className="col-12">
+                                                    <StarRatingComponent
+                                                        name="gameRating"
+                                                        starCount={5}
+                                                        starColor="#ffb400"
+                                                        emptyStarColor="#ffb400"
+                                                        value={gameAverage}
+                                                        editing={false}
+                                                        renderStarIcon={(index, value) => {
+                                                            return (
+                                                            <span>
+                                                                <i
+                                                                className={
+                                                                    index <= value
+                                                                    ? "fas fa-star"
+                                                                    : "far fa-star"
+                                                                }
+                                                                />
+                                                            </span>
+                                                            );
+                                                        }}
+                                                        renderStarIconHalf={() => {
+                                                            return (
+                                                            <span>
+                                                                <span style={{ position: "absolute" }}>
+                                                                <i className="far fa-star" />
+                                                                </span>
+                                                                <span>
+                                                                <i className="fas fa-star-half" />
+                                                                </span>
+                                                            </span>
+                                                            );
+                                                        }}
+                                                    />
+                                                    </div>
+                                                </div>
+                                                {
+                                                    this.props.auth.user.name == this.props.match.params.username &&
+                                                    <div className="row justify-content-center">
+                                                        <button className="btn btn-danger">Remove From Wishlist</button>
+                                                    </div>
+                                                }
+                                            </div>
+                                        )
+                                        
+                                    })}
+                                </div>
+                            )
+                        }
 					</div>
 					<div className="tab-pane fade" id="comments">
 						<h3>Comments Menu</h3>

@@ -3,13 +3,13 @@ const Schema = mongoose.Schema;
 
 const ProfileCommentSchema = new Schema({
   commenter: {
-    type: Schema.Types.ObjectId, ref: 'user',
+    type: Schema.Types.ObjectId, ref: 'users',
   },
   text: {
     type: String,
   },
   timestamp: {
-    type: Number,
+    type: Date,
   },
 });
 

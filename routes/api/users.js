@@ -7,6 +7,7 @@ const loginValidation = require('../../validation/login');
 const User = require('../../models/User');
 const Game = require('../../models/Game');
 const Collection = require('../../models/Collection');
+const ProfileComment = require("../../models/ProfileComment")
 const PasswordRecovery = require('../../models/PasswordRecovery');
 require('dotenv').config();
 
@@ -24,7 +25,6 @@ router.get('/getByName/:name', (req, res) => {
   User.findOne({
     name: req.params.name,
   })
-  // .populate('gameCollection').populate('items')
       .populate({
         path: 'gameCollection',
         populate: {
@@ -39,6 +39,12 @@ router.get('/getByName/:name', (req, res) => {
           select: 'rating'
         }
       })
+      .populate({
+        path: 'profileComments',
+        populate: {
+          path: 'commenter'
+        }
+      })
       .then((user) => {
         if (user) {
           res.json({
@@ -51,6 +57,32 @@ router.get('/getByName/:name', (req, res) => {
         }
       });
 });
+
+router.post("/addComment", (req, res) => {
+
+  const newComment = new ProfileComment({
+    commenter: req.body.commenterId,
+    text: req.body.comment,
+    timestamp: req.body.timestamp
+  })
+
+  newComment.save().then(savedComment => {
+    User.findByIdAndUpdate(req.body.commentReceiverId, {$push: {profileComments: savedComment._id}})
+        .then(() => {
+          User.findOne({_id: req.body.commentReceiverId})
+              .populate({
+                path: 'profileComments',
+                populate: {
+                  path: 'commenter',
+                },
+              })
+              .then((data) => {
+                res.status(200).json(data.profileComments);
+              });
+        });
+  });
+})  
+
 
 /**
  * @route GET api/users/getForrPasswordRecovery

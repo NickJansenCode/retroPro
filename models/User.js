@@ -22,6 +22,10 @@ const UserSchema = new Schema({
     type: Schema.Types.ObjectId, ref: 'passwordrecovery',
     required: true,
   }],
+  profileComments: [{
+    type: Schema.Types.ObjectId, ref: 'profilecomment',
+    required: true
+  }],
   role: {
     type: Schema.Types.ObjectId, ref: 'role',
     required: true,

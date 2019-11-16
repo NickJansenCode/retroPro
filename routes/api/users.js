@@ -248,4 +248,42 @@ router.post('/login', (req, res) => {
         });
 });
 
+router.post("/updateUser", (req, res) => {
+    User.findByIdAndUpdate(req.body.userId, { profilepicture: req.body.profilePictureURL, about: req.body.about, headerpicture: req.body.headerImageURL }).then(() => {
+
+        User.findOne({ _id: req.body.userId })
+            .populate({
+                path: 'gameCollection',
+                populate: {
+                    path: 'reviews',
+                    select: 'rating'
+                },
+            })
+            .populate({
+                path: 'wishlist',
+                populate: {
+                    path: 'reviews',
+                    select: 'rating'
+                }
+            })
+            .populate({
+                path: 'profileComments',
+                populate: {
+                    path: 'commenter'
+                }
+            })
+            .then((data) => {
+                res.status(200).json({ "user": data });
+            });
+
+    })
+})
+
+router.get("/getAuthUserProfilePicture/:id", (req, res) => {
+    User.findOne({ _id: req.params.id })
+        .then((user) => {
+            res.status(200).json(user.profilepicture)
+        })
+})
+
 module.exports = router;

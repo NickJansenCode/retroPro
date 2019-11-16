@@ -11,3 +11,13 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+
+.headerImageCover{
+    background-position: center center !important;
+    background-repeat: no-repeat !important;
+    background-size: 100% 100% !important;
+    z-index: -1;
+}
+a.nav-link.active{
+    background-color: rgba(0, 0, 255, 0.3) !important;
+}

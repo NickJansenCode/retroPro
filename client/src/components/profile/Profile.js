@@ -5,6 +5,7 @@ import { connect } from "react-redux";
 import { logoutUser } from "../../actions/authActions";
 import axios from "axios";
 import StarRatingComponent from "react-star-rating-component";
+import IsImageUrl from "is-image-url";
 
 class Profile extends Component {
     onLogoutClick = e => {
@@ -22,6 +23,11 @@ class Profile extends Component {
             comments: [],
             lists: [],
             commentText: "",
+            profilePictureLink: "",
+            headerImageLink: "",
+            userAbout: "",
+            editMode: false,
+            authUserProfilePicture: "",
             errors: {}
         };
     }
@@ -33,6 +39,9 @@ class Profile extends Component {
                 console.log(res);
                 this.setState({
                     user: res.data.user,
+                    profilePictureLink: res.data.user.profilepicture,
+                    headerImageLink: res.data.user.headerpicture || "",
+                    userAbout: res.data.user.about,
                     gameCollection: res.data.user.gameCollection,
                     wishlist: res.data.user.wishlist,
                     highlights: res.data.user.highlights,
@@ -40,6 +49,13 @@ class Profile extends Component {
                     lists: res.data.user.lists
                 });
             });
+
+        axios.get("/api/users/getAuthUserProfilePicture/" + this.props.auth.user.id)
+            .then(res => {
+                this.setState({
+                    authUserProfilePicture: res.data
+                })
+            })
     }
 
     componentWillReceiveProps(newProps) {
@@ -51,6 +67,64 @@ class Profile extends Component {
             [e.target.id]: e.target.value
         });
     };
+
+    toggleEditMode = e => {
+        e.preventDefault()
+        let editMode = !this.state.editMode;
+
+        this.setState({
+            editMode: editMode
+        })
+    }
+
+    saveEdits = e => {
+        e.preventDefault()
+        let errors = {}
+
+        if (this.state.userAbout == "") {
+            errors.userAbout = "About field is required!"
+        }
+
+        if (this.state.profilePictureLink == "") {
+            errors.profilePictureLink = "Profile Picture URL is required!"
+        }
+        else if (!IsImageUrl(this.state.profilePictureLink)) {
+            errors.profilePictureLink = "Profile Picture URL must be an image URL!"
+        }
+
+        if (this.state.headerImageLink != "") {
+            if (!IsImageUrl(this.state.headerImageLink)) {
+                errors.headerImageLink = "Header Image URL must be an image URL!"
+            }
+        }
+
+        this.setState({ errors: errors })
+
+        if (!(errors.userAbout || errors.profilePictureLink || errors.headerImageLink)) {
+            let postData = {
+                userId: this.props.auth.user.id,
+                about: this.state.userAbout,
+                profilePictureURL: this.state.profilePictureLink,
+                headerImageURL: this.state.headerImageLink
+            }
+
+            axios.post("/api/users/updateUser", postData).then(res => {
+                this.setState({
+                    user: res.data.user,
+                    authUserProfilePicture: res.data.user.profilepicture,
+                    profilePictureLink: res.data.user.profilepicture,
+                    headerImageLink: res.data.user.headerpicture || "",
+                    userAbout: res.data.user.about,
+                    gameCollection: res.data.user.gameCollection,
+                    wishlist: res.data.user.wishlist,
+                    highlights: res.data.user.highlights,
+                    comments: res.data.user.profileComments,
+                    lists: res.data.user.lists,
+                    editMode: false,
+                });
+            })
+        }
+    }
 
     submitComment = e => {
         e.preventDefault();
@@ -80,29 +154,33 @@ class Profile extends Component {
     };
 
     render() {
-        const { user } = this.props.auth;
+        let imageLink = encodeURI(this.state.user.headerpicture)
+        let headerStyle = this.state.user.headerpicture == "" ?
+            { backgroundColor: "gray" } :
+            { background: "linear-gradient(rgba(255, 255, 255, .1), rgba(255, 255, 255, .1)), url('" + imageLink + "')" };
         return (
-            <div className="container-fluid">
-                <div
-                    className="row pt-3 align-items-end"
-                    style={{ backgroundColor: "gray" }}
-                >
+            <div className="container-fluid" >
+                <div className="row pt-3 align-items-end headerImageCover" style={headerStyle}>
                     <div className="col-xs-6 col-md-2">
                         <img
                             height="250px"
                             style={{
                                 border: "2px solid black",
-                                borderRadius: "5px"
+                                backgroundColor: "white",
+                                borderRadius: "5px",
+                                color: "black",
+                                zIndex: "1",
+                                boxShadow: "10px 5px"
                             }}
                             src={this.state.user.profilepicture}
                             alt="Profile Picture"
                         />
                     </div>
-                    <div className="col-xs-6 col-md-2">
+                    <div className="col-xs-6 col-md-4" style={{ backgroundColor: "white", boxShadow: "10px 5px", borderRadius: "5px", borderRadius: "5px", border: "2px solid black" }}>
                         <h1>{this.state.user.name}</h1>
                     </div>
-                    <div className="col-xs-12 col-md-8">
-                        <ul className="nav nav-tabs float-right">
+                    <div className="col-xs-12 col-md-6">
+                        <ul className="nav nav-tabs float-right" style={{ border: "2px solid black", borderRadius: "5px", boxShadow: "10px 5px", backgroundColor: "white" }}>
                             <li className="nav-item">
                                 <a
                                     className="nav-link active"
@@ -148,6 +226,12 @@ class Profile extends Component {
                                     Friends
 								</a>
                             </li>
+                            {
+                                this.props.auth.user.name == this.props.match.params.username &&
+                                <li className="nav-item">
+                                    <a className="nav-link" data-toggle="tab" href="#settings">Settings</a>
+                                </li>
+                            }
                         </ul>
                     </div>
                 </div>
@@ -221,7 +305,7 @@ class Profile extends Component {
                             <div className="justify-content-center">
                                 <p className="text-muted">
                                     This user doesn't have any items in their
-									collection... :'(
+                                    collection... :'(
 								</p>
                             </div>
                         )) || (
@@ -321,7 +405,7 @@ class Profile extends Component {
                             <div className="justify-content-center">
                                 <p className="text-muted">
                                     This user doesn't have any items in their
-									wishlist... :'(
+                                    wishlist... :'(
 								</p>
                             </div>
                         )) || (
@@ -404,7 +488,7 @@ class Profile extends Component {
                         <div className="container">
                             <div className="row">
                                 <div className="col-xs-12 col-sm-4 col-md-2 no-gutters">
-                                    <img src={this.props.auth.user.profilePicture} height="150vh" />
+                                    <img src={this.state.authUserProfilePicture} height="150vh" />
                                 </div>
                                 <div className="col-xs-12 col-sm-8 col-md-8">
                                     <textarea
@@ -431,7 +515,7 @@ class Profile extends Component {
                                 <div className="row">
                                     <p class="text-muted">
                                         This user doesn't have any comments on
-										their profile... :'(
+                                        their profile... :'(
 									</p>
                                 </div>
                             )) ||
@@ -465,8 +549,50 @@ class Profile extends Component {
                     <div className="tab-pane fade" id="friends">
                         <h3>Friends Menu</h3>
                     </div>
+                    <div className="tab-pane fade container" id="settings">
+                        <div className="row">
+                            <h3>Settings</h3>
+                            <button className="btn btn-primary ml-3" disabled={this.state.editMode} onClick={this.toggleEditMode}><i className="fas fa-edit" /></button>
+                            <button className="btn btn-success ml-3" disabled={!this.state.editMode} onClick={this.saveEdits}><i className="fas fa-check" /></button>
+                        </div>
+
+                        <div className="row mt-3">
+                            <div className="col-xs-12 col-md-4">
+                                <h4>About</h4>
+                            </div>
+                            <div className="col-xs-12 col-md-8">
+                                <input className="form-control" type="text" value={this.state.userAbout} id="userAbout" onChange={this.onChange} disabled={!this.state.editMode} />
+                                <span className="text-danger">
+                                    {this.state.errors.userAbout}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div className="row mt-3">
+                            <div className="col-xs-12 col-md-4">
+                                <h4>Profile Picture URL</h4>
+                            </div>
+                            <div className="col-xs-12 col-md-8">
+                                <input className="form-control" type="text" value={this.state.profilePictureLink} id="profilePictureLink" onChange={this.onChange} disabled={!this.state.editMode} />
+                                <span className="text-danger">
+                                    {this.state.errors.profilePictureLink}
+                                </span>
+                            </div>
+                        </div>
+                        <div className="row mt-3">
+                            <div className="col-xs-12 col-md-4">
+                                <h4>Header Image URL</h4>
+                            </div>
+                            <div className="col-xs-12 col-md-8">
+                                <input className="form-control" type="text" value={this.state.headerImageLink} id="headerImageLink" onChange={this.onChange} disabled={!this.state.editMode} />
+                                <span className="text-danger">
+                                    {this.state.errors.headerImageLink}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            </div >
         );
     }
 }

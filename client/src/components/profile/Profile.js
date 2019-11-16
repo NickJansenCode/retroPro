@@ -153,6 +153,28 @@ class Profile extends Component {
         }
     };
 
+    addToHighlights = id => e => {
+        e.preventDefault()
+
+        axios.post("/api/users/addGameToHighlights", { gameID: id, userID: this.state.user._id })
+            .then(res => {
+                this.setState({
+                    highlights: res.data
+                })
+            })
+    }
+
+    removeFromHighlights = id => e => {
+        e.preventDefault()
+
+        axios.post("/api/users/removeGameFromHighlights", { gameID: id, userID: this.state.user._id })
+            .then(res => {
+                this.setState({
+                    highlights: res.data
+                })
+            })
+    }
+
     render() {
         let imageLink = encodeURI(this.state.user.headerpicture)
         let headerStyle = this.state.user.headerpicture == "" ?
@@ -254,17 +276,37 @@ class Profile extends Component {
                                     <h2 className="col-12">Highlights</h2>
                                 </div>
 
-                                <div className="row">
-                                    {(this.state.highlights.length != 0 &&
-                                        this.state.highlights.map(
-                                            item => { }
-                                        )) || (
+                                {(this.state.highlights.length != 0 &&
+                                    this.state.highlights.map(
+                                        item => {
+                                            let gameLink = `/Game/${item.name}`
+                                            return (
+                                                <Link to={gameLink}>
+                                                    <div className="row mt-2">
+                                                        <div className="col-md-4">
+                                                            <img src={item.coverart} height="100vh" />
+                                                        </div>
+                                                        <div className="col-md-8">
+                                                            <div className="row">
+                                                                <h6>{item.name}</h6>
+                                                            </div>
+                                                            <div className="row">
+                                                                {item.year}, {item.platform.name}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </Link>
+                                            )
+                                        }
+                                    )) || (
+                                        <div className="row">
                                             <p className="col-12">
                                                 This user has not selected any
                                                 highlights!
-										</p>
-                                        )}
-                                </div>
+										    </p>
+                                        </div>
+
+                                    )}
                             </div>
                             <div className="col-xs-12 col-md-3">
                                 <div className="row">
@@ -274,7 +316,7 @@ class Profile extends Component {
                                     {(this.state.lists.length != 0 &&
                                         this.state.lists.map(item => { })) || (
                                             <p className="col-12">
-                                                This user has not selected any
+                                                This user has not created any
                                                 lists!
 										</p>
                                         )}
@@ -385,15 +427,22 @@ class Profile extends Component {
                                                         />
                                                     </div>
                                                 </div>
-                                                {this.props.auth.user.name ==
-                                                    this.props.match.params
-                                                        .username && (
-                                                        <div className="row justify-content-center">
-                                                            <button className="btn btn-primary">
-                                                                Add To Highlights
-													</button>
-                                                        </div>
-                                                    )}
+                                                {this.props.auth.user.name == this.props.match.params.username && (
+
+                                                    this.state.highlights.filter(e => e._id == game._id).length > 0 &&
+
+                                                    <div className="row justify-content-center">
+                                                        <button className="btn btn-danger" onClick={this.removeFromHighlights(game._id)}>
+                                                            Remove From Highlights
+                                                        </button>
+                                                    </div>
+                                                    ||
+                                                    <div className="row justify-content-center">
+                                                        <button className="btn btn-primary" onClick={this.addToHighlights(game._id)}>
+                                                            Add To Highlights
+                                                        </button>
+                                                    </div>
+                                                )}
                                             </div>
                                         );
                                     })}

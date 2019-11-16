@@ -45,6 +45,12 @@ router.get('/getByName/:name', (req, res) => {
                 path: 'commenter'
             }
         })
+        .populate({
+            path: 'highlights',
+            populate: {
+                path: 'platform'
+            }
+        })
         .then((user) => {
             if (user) {
                 res.json({
@@ -283,6 +289,40 @@ router.get("/getAuthUserProfilePicture/:id", (req, res) => {
     User.findOne({ _id: req.params.id })
         .then((user) => {
             res.status(200).json(user.profilepicture)
+        })
+})
+
+router.post("/addGameToHighlights", (req, res) => {
+    User.findByIdAndUpdate(req.body.userID, { $push: { highlights: req.body.gameID } })
+        .then(user => {
+            User.findById(req.body.userID)
+                .populate({
+                    path: 'highlights',
+                    populate: {
+                        path: 'platform'
+                    }
+                })
+                .then(popUser => {
+                    res.json(popUser.highlights)
+                })
+
+        })
+})
+
+router.post("/removeGameFromHighlights", (req, res) => {
+    User.findByIdAndUpdate(req.body.userID, { $pull: { highlights: req.body.gameID } })
+        .then(user => {
+            User.findById(req.body.userID)
+                .populate({
+                    path: 'highlights',
+                    populate: {
+                        path: 'platform'
+                    }
+                })
+                .then(popUser => {
+                    res.json(popUser.highlights)
+                })
+
         })
 })
 

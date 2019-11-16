@@ -6,9 +6,9 @@ import { loginUser } from "../../actions/authActions";
 import classnames from "classnames";
 import styles from '../css/register.module.css';
 
-class Login extends Component{
+class Login extends Component {
 
-    constructor(){
+    constructor() {
         super();
         this.state = {
             email: "",
@@ -23,18 +23,18 @@ class Login extends Component{
             let username = this.props.auth.user.name
             this.props.history.push(`/profile/` + username);
         }
-      }
+    }
 
-    componentWillReceiveProps(nextProps){
+    componentWillReceiveProps(nextProps) {
 
-        if(nextProps.auth.isAuthenticated){
+        if (nextProps.auth.isAuthenticated) {
             let username = nextProps.auth.user.name
             this.props.history.push("/profile/" + username);
         }
 
-        if (nextProps.errors){
+        if (nextProps.errors) {
             this.setState({
-                errors:nextProps.errors
+                errors: nextProps.errors
             });
         }
     }
@@ -94,7 +94,7 @@ class Login extends Component{
                             </div>
                             <div className="form-group">
                                 <button className="btn btn-primary w-100 form-control mt-3"
-                                        type="submit"
+                                    type="submit"
                                 >
                                     Log In
                                 </button>

@@ -2,8 +2,8 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import landing from "../../img/landing.jpg";
 
-export default class Register extends Component{
-    render(){
+export default class Register extends Component {
+    render() {
         return (
             <div className="container">
                 <div className="row mt-3">
@@ -32,16 +32,15 @@ export default class Register extends Component{
                     <div className="col-6">
                         <p>
                             When you sign up for retroPro, you can highlight your favourite items,
-                            organize your collection into lists, create your wishlist, message 
-                            other users, and find a place to buy games in your city all in one
-                            convenient, centralized place.
+                            organize your collection into lists, create your wishlist, and find a
+                            place to buy games in your city all in one convenient, centralized place.
                         </p>
                     </div>
                 </div>
                 <div className="row mt-3">
                     <div className="col-6">
                         <Link className="btn btn-primary w-50" to="/Register">
-                                Sign Up
+                            Sign Up
                         </Link>
                     </div>
                 </div>

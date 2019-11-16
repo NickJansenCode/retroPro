@@ -29,23 +29,23 @@ class Register extends Component {
     componentDidMount() {
         // If logged in and user navigates to Register page, should redirect them to dashboard
         if (this.props.auth.isAuthenticated) {
-          this.props.history.push("/profile");
+            this.props.history.push("/profile/" + this.props.auth.user.name);
         }
 
         axios.get("api/recoveryQuestions")
-        .then(res => {
-            let options = res.data.map(item => {
-                return {value: item._id, label: item.text}
+            .then(res => {
+                let options = res.data.map(item => {
+                    return { value: item._id, label: item.text }
+                })
+                this.setState({
+                    recoveryQuestions: options
+                })
             })
-            this.setState({
-                recoveryQuestions: options
-            })
-        })
 
-      }
+    }
 
-    componentWillReceiveProps(nextProps){
-        if (nextProps.errors){
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.errors) {
             this.setState({
                 errors: nextProps.errors
             });
@@ -152,8 +152,8 @@ class Register extends Component {
                             </div>
 
                             <div className="form-group">
-                            <h4>Recovery Question 1</h4>
-                                <Select onChange={this.onChangeRecovery1} inputId="question1ID" options={this.state.recoveryQuestions}/>
+                                <h4>Recovery Question 1</h4>
+                                <Select onChange={this.onChangeRecovery1} inputId="question1ID" options={this.state.recoveryQuestions} />
                                 <span className={styles.redtext}>
                                     {this.state.errors.recoveryQuestion1ID}
                                 </span>
@@ -175,7 +175,7 @@ class Register extends Component {
 
                             <div className="form-group">
                                 <h4>Recovery Question 2</h4>
-                                <Select onChange={this.onChangeRecovery2} inputId="question2ID" options={this.state.recoveryQuestions}/>
+                                <Select onChange={this.onChangeRecovery2} inputId="question2ID" options={this.state.recoveryQuestions} />
                                 <span className={styles.redtext}>
                                     {this.state.errors.recoveryQuestion2ID}
                                 </span>
@@ -195,10 +195,10 @@ class Register extends Component {
                                 </span>
                             </div>
 
-                            
+
                             <div className="form-group">
                                 <button className="btn btn-primary w-100 form-control mt-3"
-                                        type="submit"
+                                    type="submit"
                                 >
                                     Register
                                 </button>

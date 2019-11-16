@@ -7,7 +7,7 @@ import { logoutUser } from "../../actions/authActions";
 
 class Navbar extends Component {
 
-    constructor(){
+    constructor() {
         super();
         this.state = {
             searchQuery: "",
@@ -17,9 +17,9 @@ class Navbar extends Component {
 
     onChange = e => {
         this.setState({
-          [e.target.id]: e.target.value
+            [e.target.id]: e.target.value
         });
-      };
+    };
 
     onLogoutClick = e => {
         e.preventDefault();
@@ -28,7 +28,7 @@ class Navbar extends Component {
 
     onSearch = e => {
         e.preventDefault()
-        if (!this.state.searchQuery == ""){
+        if (!this.state.searchQuery == "") {
             this.props.history.push("/search/" + this.state.searchQuery);
         }
     }
@@ -45,50 +45,49 @@ class Navbar extends Component {
                 </button>
                 <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
                     {this.props.auth.isAuthenticated &&
-                    <ul className="navbar-nav">
-                        <li className="nav-item">
-                            <Link className={styles.navLink} to="/" style={{ color: "white" }}>Home</Link>
-                        </li>
-                        <li className="nav-item">
-                            <Link className={styles.navLink} to="/About" style={{ color: "white" }}>About</Link>
-                        </li>   
-                    </ul>
-                    ||
-                    <ul className="navbar-nav mr-auto">
-                        <li className="nav-item">
-                            <Link className={styles.navLink} to="/" style={{ color: "white" }}>Home</Link>
-                        </li>
-                        <li className="nav-item">
-                            <Link className={styles.navLink} to="/About" style={{ color: "white" }}>About</Link>
-                        </li>
+                        <ul className="navbar-nav">
+                            <li className="nav-item">
+                                <Link className={styles.navLink} to="/" style={{ color: "white" }}>Home</Link>
+                            </li>
+                            <li className="nav-item">
+                                <Link className={styles.navLink} to="/About" style={{ color: "white" }}>About</Link>
+                            </li>
+                        </ul>
+                        ||
+                        <ul className="navbar-nav mr-auto">
+                            <li className="nav-item">
+                                <Link className={styles.navLink} to="/" style={{ color: "white" }}>Home</Link>
+                            </li>
+                            <li className="nav-item">
+                                <Link className={styles.navLink} to="/About" style={{ color: "white" }}>About</Link>
+                            </li>
 
-                        
-                        <li className="nav-item">
-                            <Link className={styles.navLink} to="/Login" style={{ color: "white" }}>Login</Link>
-                        </li>
-                        <li className="nav-item">
-                            <Link className={styles.navLink} to="/Register" style={{ color: "white" }}>Register</Link>
-                        </li>   
-                    </ul>
+
+                            <li className="nav-item">
+                                <Link className={styles.navLink} to="/Login" style={{ color: "white" }}>Login</Link>
+                            </li>
+                            <li className="nav-item">
+                                <Link className={styles.navLink} to="/Register" style={{ color: "white" }}>Register</Link>
+                            </li>
+                        </ul>
                     }
-                    {this.props.auth.isAuthenticated && 
-                    <form className="navbar-form form-inline w-75 m-auto" role="search" onSubmit={this.onSearch}>
-                        <input type="text" id="searchQuery" onChange={this.onChange} value={this.state.searchQuery} className="form-control w-75" placeholder="Search For A Game Or User"/>
-                        <button className="btn my-2 my-sm-0 border-secondary bg-success" type="submit">Search</button>
-                    </form>
-                    } 
+                    {this.props.auth.isAuthenticated &&
+                        <form className="navbar-form form-inline w-75 m-auto" role="search" onSubmit={this.onSearch}>
+                            <input type="text" id="searchQuery" onChange={this.onChange} value={this.state.searchQuery} className="form-control w-75" placeholder="Search For A Game Or User" />
+                            <button className="btn my-2 my-sm-0 border-secondary bg-success" type="submit">Search</button>
+                        </form>
+                    }
                 </div>
                 {this.props.auth.isAuthenticated &&
                     <ul className="navbar-nav navbar-right">
                         <li className="nav-item dropdown">
                             <div id="navbarDropdown" role="button" data-toggle="dropdown"
-                                 aria-haspopup="true" className="dropdown-toggle"
-                                 className={styles.navLink}>
-                                     Logged in as {this.props.auth.user.name}
+                                aria-haspopup="true" className="dropdown-toggle"
+                                className={styles.navLink}>
+                                Logged in as {this.props.auth.user.name}
                             </div>
                             <div className="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <Link className="dropdown-item" to={profileLink}>Profile</Link>
-                                {/* <Link className="dropdown-item" to="/Messages">Messages</Link> */}
                                 <Link className="dropdown-item" to="/FindStore">Find A Store</Link>
                                 <Link className="dropdown-item" to="/Settings">Settings</Link>
                                 <Link className="dropdown-item" to="/Submit">Submit A Game</Link>
@@ -102,7 +101,7 @@ class Navbar extends Component {
                         </li>
                     </ul>
                 }
-                
+
             </nav>
         )
     }

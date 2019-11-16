@@ -53,7 +53,7 @@ const UserSchema = new Schema({
     },
     headerpicture: {
         type: String,
-        required: true,
+        default: ""
     },
     about: {
         type: String,

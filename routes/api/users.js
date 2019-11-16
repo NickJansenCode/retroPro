@@ -191,8 +191,9 @@ router.post('/updatePassword', (req, res) => {
                 if (err) throw err;
                 user.password = hash;
 
-                user.save();
-                return res.status(200).json('Success');
+                user.save().then(() => {
+                    return res.status(200).json('Success');
+                })
             });
         });
     });

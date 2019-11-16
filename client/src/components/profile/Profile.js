@@ -175,6 +175,17 @@ class Profile extends Component {
             })
     }
 
+    removeFromWishlist = id => e => {
+        e.preventDefault()
+
+        axios.post("/api/users/removeGameFromWishlist", { gameID: id, userID: this.state.user._id })
+            .then(res => {
+                this.setState({
+                    wishlist: res.data
+                })
+            })
+    }
+
     render() {
         let imageLink = encodeURI(this.state.user.headerpicture)
         let headerStyle = this.state.user.headerpicture == "" ?
@@ -522,7 +533,7 @@ class Profile extends Component {
                                                 </div>
                                                 {this.props.auth.user.name == this.props.match.params.username && (
                                                     <div className="row justify-content-center">
-                                                        <button className="btn btn-danger">
+                                                        <button className="btn btn-danger" onClick={this.removeFromWishlist(game._id)}>
                                                             Remove From Wishlist
 													        </button>
                                                     </div>

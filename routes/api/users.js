@@ -326,4 +326,22 @@ router.post("/removeGameFromHighlights", (req, res) => {
         })
 })
 
+router.post("/removeGameFromWishlist", (req, res) => {
+    User.findByIdAndUpdate(req.body.userID, { $pull: { wishlist: req.body.gameID } })
+        .then(user => {
+            User.findById(req.body.userID)
+                .populate({
+                    path: 'wishlist',
+                    populate: {
+                        path: 'reviews',
+                        select: 'rating'
+                    }
+                })
+                .then(popUser => {
+                    res.json(popUser.wishlist)
+                })
+
+        })
+})
+
 module.exports = router;

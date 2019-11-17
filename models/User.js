@@ -31,8 +31,9 @@ const UserSchema = new Schema({
         required: true,
         default: '5dcc7cc1d0525b0a30cfb1f1',
     },
-    settings: {
-        type: Schema.Types.ObjectId, ref: 'settings',
+    private: {
+        type: Boolean,
+        default: false,
     },
     name: {
         type: String,

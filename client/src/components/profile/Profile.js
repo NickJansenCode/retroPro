@@ -243,6 +243,28 @@ class Profile extends Component {
     }
 
     render() {
+
+        if (this.state.user.private && this.state.friendshipStatus != "Friends" && this.state.user._id != this.props.auth.user.id) {
+            return (
+                <div className="container">
+                    <div className="row">
+                        <h1>{this.state.user.name}</h1>
+                    </div>
+                    <div className="row">
+                        <p className="text-muted">This user has a private profile!</p>
+                    </div>
+                    <div className="row">
+                        {
+                            this.state.friendshipStatus == "Pending" &&
+                            <button className="btn btn-primary" disabled>Friendship Pending</button>
+                            ||
+                            <button className="btn btn-primary" onClick={this.sendFriendRequest}>Add As A Friend</button>
+                        }
+                    </div>
+                </div>
+            )
+        }
+
         let imageLink = encodeURI(this.state.user.headerpicture)
         let headerStyle = this.state.user.headerpicture == "" ?
             { backgroundColor: "gray" } :

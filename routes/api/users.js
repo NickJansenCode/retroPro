@@ -13,7 +13,7 @@ const Friendship = require("../../models/Friendship")
 require('dotenv').config();
 
 router.get('/search/:name', (req, res) => {
-    User.find({ 'name': { $regex: '.*' + req.params.name + '.*', $options: 'i' } })
+    User.find({ $or: [{ 'name': { $regex: '.*' + req.params.name + '.*', $options: 'i' } }, { 'tags': { $regex: req.params.name, $options: 'i' } }] })
         .then(((users) => {
             res.status(200).json(users);
         }))
@@ -21,6 +21,36 @@ router.get('/search/:name', (req, res) => {
             res.status(500).json(err);
         });
 });
+
+router.get('/getSettings/:id', (req, res) => {
+    User.findOne({ _id: req.params.id })
+        .then(user => {
+            res.status(200).json({
+                privateAccount: user.private,
+                tags: user.tags,
+            })
+        })
+})
+
+router.post("/saveSettings", (req, res) => {
+    User.findOneAndUpdate({ _id: req.body.userID }, { private: req.body.privateAccount }).then(() => {
+        res.json(true)
+    })
+})
+
+router.post("/addTag", (req, res) => {
+    User.findByIdAndUpdate(req.body.userID, { $push: { tags: req.body.tag } })
+        .then(() => {
+            res.json(true)
+        })
+})
+
+router.post("/removeTag", (req, res) => {
+    User.findByIdAndUpdate(req.body.userID, { $pull: { tags: req.body.tag } })
+        .then(() => {
+            res.json(true)
+        })
+})
 
 router.post('/getByName', (req, res) => {
     User.findOne({
@@ -199,13 +229,16 @@ router.post('/register', (req, res) => {
                             answer: req.body.recoveryQuestion2Answer,
                         });
 
+
                         passwordRecovery1.save().then((recovery1) => {
                             passwordRecovery2.save().then((recovery2) => {
+
                                 const newUser = new User({
                                     name: req.body.name,
                                     email: req.body.email,
                                     password: req.body.password,
                                     passwordrecovery: [recovery1._id, recovery2._id],
+
                                 });
 
                                 bcrypt.genSalt(10, (err, salt) => {
@@ -220,6 +253,7 @@ router.post('/register', (req, res) => {
                                             .catch((err) => console.log(err));
                                     });
                                 });
+
                             });
                         });
                     }

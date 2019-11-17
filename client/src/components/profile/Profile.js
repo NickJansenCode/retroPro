@@ -22,21 +22,22 @@ class Profile extends Component {
             highlights: [],
             comments: [],
             lists: [],
+            friends: [],
             commentText: "",
             profilePictureLink: "",
             headerImageLink: "",
             userAbout: "",
             editMode: false,
             authUserProfilePicture: "",
+            friendshipStatus: "",
             errors: {}
         };
     }
 
     componentDidMount() {
         axios
-            .get(`/api/users/getByName/${this.props.match.params.username}`)
+            .post(`/api/users/getByName`, { name: this.props.match.params.username, authID: this.props.auth.user.id })
             .then(res => {
-                console.log(res);
                 this.setState({
                     user: res.data.user,
                     profilePictureLink: res.data.user.profilepicture,
@@ -46,9 +47,14 @@ class Profile extends Component {
                     wishlist: res.data.user.wishlist,
                     highlights: res.data.user.highlights,
                     comments: res.data.user.profileComments,
-                    lists: res.data.user.lists
+                    lists: res.data.user.lists,
+                    friendshipStatus: res.data.friendshipStatus,
+                    friends: res.data.friends || [],
                 });
-            });
+            })
+            .catch(err => {
+                console.log(err)
+            })
 
         axios.get("/api/users/getAuthUserProfilePicture/" + this.props.auth.user.id)
             .then(res => {
@@ -184,6 +190,56 @@ class Profile extends Component {
                     wishlist: res.data
                 })
             })
+    }
+
+    sendFriendRequest = e => {
+        e.preventDefault();
+
+        axios.post("/api/users/sendFriendRequest", { requesterID: this.props.auth.user.id, requestedID: this.state.user._id })
+            .then(() => {
+                window.location.reload()
+            })
+    }
+
+    acceptFriendRequest = e => {
+        e.preventDefault();
+
+        // Accept friend request and then update user's friends list and friendship status. //
+        axios.post("/api/users/acceptFriendRequest", { requesterID: this.state.user._id, requestedID: this.props.auth.user.id })
+            .then(() => {
+                window.location.reload()
+            })
+    }
+
+    rejectFriendRequest = e => {
+        e.preventDefault();
+
+        axios.post("/api/users/rejectFriendRequest", { requesterID: this.state.user._id, requestedID: this.props.auth.user.id })
+            .then(() => {
+                window.location.reload()
+            })
+    }
+
+    removeFromFriends = e => {
+        e.preventDefault();
+
+        // Remove from friends and then update user's friends list and friendship status. //
+        axios.post("/api/users/removeFromFriends", { friendA: this.state.user._id, friendB: this.props.auth.user.id })
+            .then(() => {
+                window.location.reload()
+            })
+
+    }
+
+    removeFromFriends = id => e => {
+        e.preventDefault();
+
+        // Remove from friends and then update user's friends list and friendship status. //
+        axios.post("/api/users/removeFromFriends", { friendA: id, friendB: this.props.auth.user.id })
+            .then(() => {
+                window.location.reload()
+            })
+
     }
 
     render() {
@@ -334,14 +390,64 @@ class Profile extends Component {
                                 </div>
                             </div>
                             <div className="col-xs-12 col-md-3">
-                                <div className="row">
-                                    <button
-                                        onClick={this.sendFriendRequest}
-                                        className="btn btn-primary btn-large col-12 w-100"
-                                    >
-                                        Add As A Friend
-									</button>
-                                </div>
+                                {
+                                    // Can't add yourself as a friend. //
+                                    this.props.auth.user.name == this.props.match.params.username &&
+                                    <div className="row">
+                                        <button
+                                            className="btn btn-primary btn-large col-12 w-100"
+                                            disabled>
+                                            Add As A Friend
+                                            </button>
+                                    </div>
+
+                                    // If you are friends, you can choose to remove them. //
+                                    || this.state.friendshipStatus == "Friends" &&
+                                    <div className="row">
+                                        <button
+                                            onClick={this.removeFromFriends}
+                                            className="btn btn-warning btn-large w-100">
+                                            Remove From Friends
+                                        </button>
+                                    </div>
+
+
+                                    // If you've sent them a friend request and they haven't accepted. //
+                                    || this.state.friendshipStatus == "Pending" &&
+                                    <div className="row">
+                                        <button
+                                            className="btn btn-primary btn-large w-100"
+                                            disabled>
+                                            Friend Request Pending..
+                                        </button>
+                                    </div>
+
+
+                                    // If they have sent you a friend request and you haven't accepted. //
+                                    || this.state.friendshipStatus == "PendingAccept" &&
+                                    <div className="row">
+                                        <button
+                                            className="btn btn-primary btn-large w-100"
+                                            onClick={this.acceptFriendRequest}
+                                        >
+                                            Accept Friend Request
+                                            </button>
+                                        <button className="btn btn-danger btn-large w-100 mt-2" onClick={this.rejectFriendRequest}>
+                                            Reject Friend Request
+                                            </button>
+                                    </div>
+
+                                    ||
+                                    <div className="row">
+                                        <button
+                                            onClick={this.sendFriendRequest}
+                                            className="btn btn-primary btn-large col-12 w-100">
+                                            Add As A Friend
+									    </button>
+                                    </div>
+
+                                }
+
                                 <div className="row mt-2">
                                     <button
                                         onClick={this.sendReport}
@@ -573,7 +679,7 @@ class Profile extends Component {
                             <br />
                             {(this.state.comments.length == 0 && (
                                 <div className="row">
-                                    <p class="text-muted">
+                                    <p className="text-muted">
                                         This user doesn't have any comments on
                                         their profile... :'(
 									</p>
@@ -593,7 +699,7 @@ class Profile extends Component {
                                                         {comment.commenter.name}
                                                     </h5>
                                                 </Link>
-                                                <p class="text-muted">
+                                                <p className="text-muted">
                                                     {timeString}
                                                 </p>
                                             </div>
@@ -607,7 +713,50 @@ class Profile extends Component {
                         </div>
                     </div>
                     <div className="tab-pane fade" id="friends">
-                        <h3>Friends Menu</h3>
+                        {
+                            this.state.friends.length == 0 &&
+                            <div className="row">
+                                <p className="text-muted">
+                                    This user doesn't have any friends... :( Be the first to add them!
+                                </p>
+                            </div>
+                            ||
+                            <div className="row">
+                                {
+                                    this.state.friends.map(friendship => {
+                                        let user = friendship.friendA._id == this.state.user._id ? friendship.friendB : friendship.friendA;
+                                        let userLink = `/Profile/${user.name}`
+                                        return (
+                                            <div className="col-xs-12 col-sm-6 col-md-3 mt-3" >
+                                                <Link to={userLink}>
+                                                    <div className="row justify-content-center">
+                                                        <img
+                                                            className="col-xs-12"
+                                                            height="150vh"
+                                                            src={user.profilepicture}
+                                                        ></img>
+                                                    </div>
+                                                    <div className="row text-center">
+                                                        <div className="col-12">
+                                                            {user.name}
+                                                        </div>
+                                                    </div>
+                                                </Link>
+                                                {this.state.user._id == this.props.auth.user.id &&
+
+                                                    (
+                                                        <div className="row justify-content-center">
+                                                            <button className="btn btn-danger" onClick={this.removeFromFriends(user._id)}>Remove From Friends</button>
+                                                        </div>
+                                                    )
+                                                }
+                                            </div>
+                                        )
+                                    })}
+                            </div>
+                        }
+
+
                     </div>
                     <div className="tab-pane fade container" id="settings">
                         <div className="row">

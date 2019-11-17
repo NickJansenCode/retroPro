@@ -4,6 +4,8 @@ import { connect } from "react-redux";
 import styles from '../css/navbar.module.css';
 import PropTypes from "prop-types";
 import { logoutUser } from "../../actions/authActions";
+import Axios from "axios";
+import NotificationBadge from 'react-notification-badge';
 
 class Navbar extends Component {
 
@@ -12,6 +14,23 @@ class Navbar extends Component {
         this.state = {
             searchQuery: "",
             emptySearch: false,
+            friendRequestCount: 0,
+            friendRequests: []
+        }
+    }
+
+    componentDidMount() {
+
+        if (this.props.auth.isAuthenticated) {
+
+            // Load pending friend requests for the currently logged in user. //
+            Axios.post("/api/users/getFriendRequests", { userID: this.props.auth.user.id })
+                .then(res => {
+                    this.setState({
+                        friendRequestCount: res.data.length,
+                        friendRequests: res.data
+                    })
+                })
         }
     }
 
@@ -30,6 +49,41 @@ class Navbar extends Component {
         e.preventDefault()
         if (!this.state.searchQuery == "") {
             this.props.history.push("/search/" + this.state.searchQuery);
+        }
+    }
+
+    acceptFriendRequest = requesterID => e => {
+        e.preventDefault();
+
+        // Accept friend request and then update user's friends list and friendship status. //
+        Axios.post("/api/users/acceptFriendRequest", { requesterID: requesterID, requestedID: this.props.auth.user.id })
+            .then(() => {
+                window.location.reload()
+            })
+    }
+
+    rejectFriendRequest = requesterID => e => {
+        e.preventDefault();
+
+        Axios.post("/api/users/rejectFriendRequest", { requesterID: requesterID, requestedID: this.props.auth.user.id })
+            .then(() => {
+                window.location.reload()
+            })
+    }
+
+    componentDidUpdate(prevProps) {
+        if (this.props.location !== prevProps.location) {
+            if (this.props.auth.isAuthenticated) {
+
+                // Load pending friend requests for the currently logged in user. //
+                Axios.post("/api/users/getFriendRequests", { userID: this.props.auth.user.id })
+                    .then(res => {
+                        this.setState({
+                            friendRequestCount: res.data.length,
+                            friendRequests: res.data
+                        })
+                    })
+            }
         }
     }
 
@@ -80,6 +134,45 @@ class Navbar extends Component {
                 </div>
                 {this.props.auth.isAuthenticated &&
                     <ul className="navbar-nav navbar-right">
+                        <li className="nav-item dropdown">
+                            <div id="navbarDropdown2" role="button" data-toggle="dropdown"
+                                aria-haspopup="true" className="dropdown-toggle"
+                                className={styles.navLink}>
+                                <i className="fas fa-bell fa-lg">
+                                    <NotificationBadge count={this.state.friendRequestCount} />
+                                </i>
+                            </div>
+                            <div className="dropdown-menu" aria-labelledby="navbarDropdown2">
+                                {this.state.friendRequestCount > 0 &&
+                                    this.state.friendRequests.map(request => {
+                                        return (
+                                            <div className="container">
+                                                <div className="row">
+                                                    <div className="col-12">
+                                                        Friend Request from <strong>{request.friendA.name}</strong>
+                                                    </div>
+                                                </div>
+                                                <div className="row">
+                                                    <div className="col-s-10 col-md-4">
+                                                        <button className="btn btn-danger btn-sm mr-3" onClick={this.rejectFriendRequest(request.friendA._id)}>Decline</button>
+                                                    </div>
+                                                    <div className="col-s-10 col-md-4">
+                                                        <button className="btn btn-primary btn-sm ml-3" onClick={this.acceptFriendRequest(request.friendA._id)}>Accept</button>
+                                                    </div>
+                                                </div>
+                                                <br />
+                                            </div>
+                                        )
+                                    })
+                                    ||
+                                    <div className="container">
+                                        <p class="text-muted">
+                                            No friend requests... :(
+                                        </p>
+                                    </div>
+                                }
+                            </div>
+                        </li>
                         <li className="nav-item dropdown">
                             <div id="navbarDropdown" role="button" data-toggle="dropdown"
                                 aria-haspopup="true" className="dropdown-toggle"

@@ -9,6 +9,7 @@ const Game = require('../../models/Game');
 const Collection = require('../../models/Collection');
 const ProfileComment = require("../../models/ProfileComment")
 const PasswordRecovery = require('../../models/PasswordRecovery');
+const Friendship = require("../../models/Friendship")
 require('dotenv').config();
 
 router.get('/search/:name', (req, res) => {
@@ -21,9 +22,9 @@ router.get('/search/:name', (req, res) => {
         });
 });
 
-router.get('/getByName/:name', (req, res) => {
+router.post('/getByName', (req, res) => {
     User.findOne({
-        name: req.params.name,
+        name: req.body.name,
     })
         .populate({
             path: 'gameCollection',
@@ -53,9 +54,49 @@ router.get('/getByName/:name', (req, res) => {
         })
         .then((user) => {
             if (user) {
-                res.json({
-                    user: user,
-                });
+
+                Friendship.find({ $or: [{ friendA: user._id, pending: false }, { friendB: user._id, pending: false }] })
+                    .populate('friendA')
+                    .populate('friendB')
+                    .then((friendships) => {
+                        Friendship.findOne({ $or: [{ friendA: req.body.authID, friendB: user._id }, { friendA: user._id, friendB: req.body.authID }] }).then(friendship => {
+                            let friendshipStatus = ""
+                            if (friendship) {
+
+                                // You are friends. //
+                                if (friendship.pending == false) {
+                                    friendshipStatus = "Friends"
+                                }
+                                else {
+
+                                    // If you requested them and it's still pending. //
+                                    if (friendship.friendA == req.body.authID) {
+                                        friendshipStatus = "Pending"
+                                    }
+
+                                    // If they requested you and it's still pending. //
+                                    else {
+                                        friendshipStatus = "PendingAccept"
+                                    }
+                                }
+
+                                res.json({
+                                    friends: friendships,
+                                    friendshipStatus: friendshipStatus,
+                                    user: user,
+                                });
+
+                            } else {
+
+                                res.json({
+                                    friends: friendships,
+                                    friendshipStatus: friendshipStatus,
+                                    user: user,
+                                });
+                            }
+                        })
+                    })
+
             } else {
                 return res
                     .status(400)
@@ -135,46 +176,57 @@ router.post('/register', (req, res) => {
     }
 
     User.findOne({
-        email: req.body.email,
-    }).then((user) => {
-        if (user) {
-            return res.status(400).json({ email: 'Email already exists.' });
-        } else {
-            const passwordRecovery1 = new PasswordRecovery({
-                question: req.body.recoveryQuestion1ID,
-                answer: req.body.recoveryQuestion1Answer,
-            });
-
-            const passwordRecovery2 = new PasswordRecovery({
-                question: req.body.recoveryQuestion2ID,
-                answer: req.body.recoveryQuestion2Answer,
-            });
-
-            passwordRecovery1.save().then((recovery1) => {
-                passwordRecovery2.save().then((recovery2) => {
-                    const newUser = new User({
-                        name: req.body.name,
-                        email: req.body.email,
-                        password: req.body.password,
-                        passwordrecovery: [recovery1._id, recovery2._id],
-                    });
-
-                    bcrypt.genSalt(10, (err, salt) => {
-                        bcrypt.hash(newUser.password, salt, (err, hash) => {
-                            if (err) throw err;
-                            newUser.password = hash;
-                            newUser
-                                .save()
-                                .then((user) => {
-                                    res.json(user);
-                                })
-                                .catch((err) => console.log(err));
+        name: req.body.name,
+    })
+        .then(user => {
+            if (user) {
+                return res.status(400).json({ name: 'Name already exists.' })
+            }
+            else {
+                User.findOne({
+                    email: req.body.email,
+                }).then((user) => {
+                    if (user) {
+                        return res.status(400).json({ email: 'Email already exists.' });
+                    } else {
+                        const passwordRecovery1 = new PasswordRecovery({
+                            question: req.body.recoveryQuestion1ID,
+                            answer: req.body.recoveryQuestion1Answer,
                         });
-                    });
+
+                        const passwordRecovery2 = new PasswordRecovery({
+                            question: req.body.recoveryQuestion2ID,
+                            answer: req.body.recoveryQuestion2Answer,
+                        });
+
+                        passwordRecovery1.save().then((recovery1) => {
+                            passwordRecovery2.save().then((recovery2) => {
+                                const newUser = new User({
+                                    name: req.body.name,
+                                    email: req.body.email,
+                                    password: req.body.password,
+                                    passwordrecovery: [recovery1._id, recovery2._id],
+                                });
+
+                                bcrypt.genSalt(10, (err, salt) => {
+                                    bcrypt.hash(newUser.password, salt, (err, hash) => {
+                                        if (err) throw err;
+                                        newUser.password = hash;
+                                        newUser
+                                            .save()
+                                            .then((user) => {
+                                                res.json(user);
+                                            })
+                                            .catch((err) => console.log(err));
+                                    });
+                                });
+                            });
+                        });
+                    }
                 });
-            });
-        }
-    });
+            }
+        })
+
 });
 
 router.post('/updatePassword', (req, res) => {
@@ -345,4 +397,108 @@ router.post("/removeGameFromWishlist", (req, res) => {
         })
 })
 
+router.post("/sendFriendRequest", (req, res) => {
+    const newFriendRequest = new Friendship({
+        friendA: req.body.requesterID,
+        friendB: req.body.requestedID
+    })
+
+    newFriendRequest.save().then(value => {
+        return res.status(200).json(true)
+    })
+})
+
+/**
+ * Accepts a friend request. Finds a friend request
+ * from the requesting user to the requested user and sets its pending state to 
+ * false. Then finds the friends for the requester and returns
+ * their details. (profile purposes)
+ */
+router.post("/acceptFriendRequest", (req, res) => {
+
+    Friendship.findOneAndUpdate({
+        friendA: req.body.requesterID,
+        friendB: req.body.requestedID
+    }, {
+        pending: false
+    }, (friendship) => {
+
+        // Find all the friends for the user who's profile we're on. //
+        Friendship.find({ $or: [{ friendA: req.body.requesterID }, { friendB: req.body.requesterID }] })
+            .populate({
+                path: 'friendA'
+            })
+            .populate({
+                path: 'friendB'
+            })
+            .then(friendships => {
+                return res.json(friendships)
+            })
+    })
+})
+
+/**
+ * Rejects a friend request. Finds and deletes a friend request
+ * from the requesting user to the requested user. Then finds the friends
+ * for the requester and returns their details. 
+ */
+router.post("/rejectFriendRequest", (req, res) => {
+
+    Friendship.findOneAndDelete({
+        friendA: req.body.requesterID,
+        friendB: req.body.requestedID
+    }, (friendship) => {
+
+        // Find all the friends for the user who's profile we're on. //
+        Friendship.find({ $or: [{ friendA: req.body.requesterID }, { friendB: req.body.requesterID }] })
+            .populate({
+                path: 'friendA'
+            })
+            .populate({
+                path: 'friendB'
+            })
+            .then(friendships => {
+                return res.json(friendships)
+            })
+    })
+})
+
+/**
+ * Removes a friendship between two users. Finds the friends 
+ * for user A and returns their details. (profile purposes)
+ */
+router.post("/removeFromFriends", (req, res) => {
+    Friendship.findOneAndDelete({ $or: [{ friendA: req.body.friendA, friendB: req.body.friendB }, { friendA: req.body.friendB, friendB: req.body.friendA }] })
+        .then(() => {
+            Friendship.find({ $or: [{ friendA: req.body.friendA }, { friendB: req.body.friendA }] })
+                .populate({
+                    path: 'friendA'
+                })
+                .populate({
+                    path: 'friendB'
+                })
+                .then(friendships => {
+                    return res.json(friendships)
+                })
+        })
+})
+
+/**
+ * Loads all pending friend requests to a user.
+ */
+router.post("/getFriendRequests", (req, res) => {
+    Friendship.find({
+        friendB: req.body.userID,
+        pending: true
+    })
+        .populate({
+            path: "friendA"
+        })
+        .then(requests => {
+            if (!requests) {
+                return res.json([])
+            }
+            return res.json(requests)
+        })
+})
 module.exports = router;

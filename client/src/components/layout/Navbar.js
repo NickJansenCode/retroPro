@@ -47,7 +47,7 @@ class Navbar extends Component {
 
     onSearch = e => {
         e.preventDefault()
-        if (!this.state.searchQuery == "") {
+        if (!this.state.searchQuery.trim() == "") {
             this.props.history.push("/search/" + this.state.searchQuery);
         }
     }
@@ -145,11 +145,12 @@ class Navbar extends Component {
                             <div className="dropdown-menu" aria-labelledby="navbarDropdown2">
                                 {this.state.friendRequestCount > 0 &&
                                     this.state.friendRequests.map(request => {
+                                        let profileLink = `/Profile/${request.friendA.name}`
                                         return (
                                             <div className="container">
                                                 <div className="row">
                                                     <div className="col-12">
-                                                        Friend Request from <strong>{request.friendA.name}</strong>
+                                                        Friend Request from <Link to={profileLink}><strong>{request.friendA.name}</strong></Link>
                                                     </div>
                                                 </div>
                                                 <div className="row">

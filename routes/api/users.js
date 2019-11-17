@@ -326,6 +326,9 @@ router.post("/updateUser", (req, res) => {
                 }
             })
             .populate({
+                path: 'highlights', populate: { path: 'platform' }
+            })
+            .populate({
                 path: 'profileComments',
                 populate: {
                     path: 'commenter'

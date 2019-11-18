@@ -21,6 +21,7 @@ import Game from "./components/game/Game";
 import Search from "./components/search/search"
 import Settings from "./components/settings/settings";
 import SubmitGame from "./components/game/SubmitGame";
+import Report from "./components/report/Report";
 
 
 if (localStorage.jwtToken) {
@@ -53,6 +54,7 @@ class App extends Component {
                         <PrivateRoute exact path="/game/:name" component={Game} />
                         <PrivateRoute exact path="/settings" component={Settings} />
                         <PrivateRoute exact path="/submit" component={SubmitGame} />
+                        <PrivateRoute exact path="/report" component={Report} />
                     </div>
                 </Router>
             </Provider>

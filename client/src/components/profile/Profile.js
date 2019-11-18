@@ -471,12 +471,14 @@ class Profile extends Component {
                                 }
 
                                 <div className="row mt-2">
-                                    <button
-                                        onClick={this.sendReport}
-                                        className="btn btn-danger btn-large col-12 w-100"
-                                    >
+                                    <Link className="btn btn-danger btn-large w-100" to={{
+                                        pathname: "/report",
+                                        state: {
+                                            name: this.state.user.name
+                                        }
+                                    }}>
                                         Report User
-									</button>
+                                    </Link>
                                 </div>
                             </div>
                         </div>

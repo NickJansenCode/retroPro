@@ -12,11 +12,15 @@ const UserReportSchema = new Schema({
         type: Schema.Types.ObjectId, ref: 'reportcategory',
     },
     timestamp: {
-        type: Number,
+        type: Date,
     },
     text: {
         type: String,
     },
+    pending: {
+        type: Boolean,
+        default: true
+    }
 });
 
 module.exports = UserReport = mongoose.model('userreport', UserReportSchema);

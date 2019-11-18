@@ -22,6 +22,13 @@ router.get('/search/:name', (req, res) => {
         });
 });
 
+router.get("/getSubmissions", (req, res) => {
+    Game.find({ inreviewqueue: true })
+        .then(games => {
+            return res.status(200).json(games)
+        })
+})
+
 router.post('/', (req, res) => {
     const gameDetails = {
         year: req.body.year,

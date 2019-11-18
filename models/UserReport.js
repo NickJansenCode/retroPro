@@ -3,10 +3,10 @@ const Schema = mongoose.Schema;
 
 const UserReportSchema = new Schema({
     reporter: {
-        type: Schema.Types.ObjectId, ref: 'user',
+        type: Schema.Types.ObjectId, ref: 'users',
     },
     reported: {
-        type: Schema.Types.ObjectId, ref: 'user',
+        type: Schema.Types.ObjectId, ref: 'users',
     },
     reportCategory: {
         type: Schema.Types.ObjectId, ref: 'reportcategory',

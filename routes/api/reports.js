@@ -12,6 +12,22 @@ router.get('/getCategories', (req, res) => {
         })
 });
 
+router.get("/getActiveReports", (req, res) => {
+    UserReport.find({ pending: true })
+        .populate({
+            path: "reporter",
+            select: ["_id", "name", "profilepicture"]
+        })
+        .populate({
+            path: "reported",
+            select: ["_id", "name", "profilepicture"]
+        })
+        .populate("reportCategory")
+        .then(reports => {
+            return res.status(200).json(reports)
+        })
+})
+
 router.post("/submitReport", (req, res) => {
     const { errors, isValid } = reportSubmissionValidation(req.body)
 

@@ -3,6 +3,13 @@ const router = express.Router();
 const Game = require('../../models/Game');
 const Platform = require('../../models/Platform');
 
+router.get("/", (req, res) => {
+    Platform.find({})
+        .then(platforms => {
+            return res.status(200).json(platforms)
+        })
+})
+
 router.post('/', (req, res) => {
     const platformDetails = {
         name: req.body.name,

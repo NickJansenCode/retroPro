@@ -3,6 +3,7 @@ const Game = require('../../models/Game');
 const User = require('../../models/User');
 const Review = require('../../models/Review');
 const Comment = require('../../models/GameComment');
+const gameSubmissionValidation = require('../../validation/gameSubmission');
 const express = require('express');
 const router = express.Router();
 
@@ -41,6 +42,37 @@ router.post('/', (req, res) => {
             res.status(400).send({ 'message': 'Failed to insert Game.' });
         });
 });
+
+router.post('/submit', (req, res) => {
+    const { errors, isValid } = gameSubmissionValidation(req.body);
+
+    if (!isValid) {
+        return res.status(400).json(errors);
+    }
+
+    Game.findOne({
+        name: req.body.name
+    })
+        .then(game => {
+            if (game) {
+                return res.status(400).json({ name: 'A game with this name already exists.' })
+            }
+
+            const newGame = new Game({
+                year: req.body.year,
+                name: req.body.name,
+                description: req.body.description,
+                platform: req.body.platform,
+                coverart: req.body.coverart,
+            });
+
+            newGame.save()
+                .then(() => {
+                    res.status(200).json("Success!")
+                })
+
+        })
+})
 
 router.post('/loadGamePageData', (req, res) => {
     Game.findOne({ 'name': req.body.game })

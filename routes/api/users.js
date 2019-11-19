@@ -4,7 +4,9 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const registerValidation = require('../../validation/register');
 const loginValidation = require('../../validation/login');
+const promoteUserValidation = require("../../validation/promoteUser")
 const User = require('../../models/User');
+const Role = require("../../models/Role")
 const Game = require('../../models/Game');
 const Collection = require('../../models/Collection');
 const ProfileComment = require("../../models/ProfileComment")
@@ -134,6 +136,43 @@ router.post('/getByName', (req, res) => {
             }
         });
 });
+
+/**
+ * Administrator action to promote a non-admin user to admin.
+ */
+router.post("/promoteUser", (req, res) => {
+    const { errors, isValid } = promoteUserValidation(req.body);
+
+    if (!isValid) {
+        return res.status(400).json(errors);
+    }
+
+    User.findOne({
+        name: req.body.name
+    })
+        .then(user => {
+            if (!user) {
+                return res.status(400).json({ promoteName: `User with name ${req.body.name} does not exist` })
+            }
+
+            // Should never fail. //
+            Role.findOne({
+                name: "Admin"
+            })
+                .then(role => {
+                    if (role._id.equals(user.role)) {
+                        return res.status(400).json({ promoteName: `User with name ${req.body.name} is already an admin` })
+                    }
+
+                    user.role = role._id;
+
+                    user.save().then(() => {
+                        return res.status(200).json("Success")
+                    })
+
+                })
+        })
+})
 
 router.post("/addComment", (req, res) => {
 

@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Link, withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { submitReport } from "../../actions/submitReportActions";
+import { promoteUser } from "../../actions/adminActions";
 import axios from 'axios'
 
 class Admin extends Component {
@@ -85,6 +85,7 @@ class Admin extends Component {
      */
     promoteUser = e => {
         e.preventDefault();
+        this.props.promoteUser({ name: this.state.promoteName }, this.props.history)
     }
 
     render() {
@@ -234,7 +235,7 @@ class Admin extends Component {
 }
 
 Admin.propTypes = {
-    submitReport: PropTypes.func.isRequired,
+    promoteUser: PropTypes.func.isRequired,
     auth: PropTypes.object.isRequired,
     errors: PropTypes.object.isRequired
 };
@@ -246,5 +247,5 @@ const mapStateToProps = state => ({
 
 export default connect(
     mapStateToProps,
-    { submitReport }
+    { promoteUser }
 )(withRouter(Admin));

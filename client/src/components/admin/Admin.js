@@ -86,6 +86,7 @@ class Admin extends Component {
     promoteUser = e => {
         e.preventDefault();
         this.props.promoteUser({ name: this.state.promoteName })
+        this.props.promoteUser()
     }
 
     render() {

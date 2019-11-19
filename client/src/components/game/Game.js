@@ -226,14 +226,14 @@ class Game extends Component {
                                     className="btn btn-primary btn-large"
                                 >
                                     I Have Played This Game
-                </button>
+                            </button>
                             )) || (
                                     <button
                                         onClick={this.toggleGamePlayed}
                                         className="btn btn-danger btn-large"
                                     >
                                         I Have Not Played This Game
-                </button>
+                                    </button>
                                 )}
                         </div>
                         <div className="mt-2">

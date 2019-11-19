@@ -35,3 +35,14 @@ export const deleteUser = (userData) => dispatch => {
             payload: err.response.data
         }));
 }
+
+export const approveSubmission = (gameID, history) => dispatch => {
+    axios
+        .post("/api/games/approveSubmission", { gameID: gameID })
+        .then(res => history.push(`/game/${res.data.gameName}`))
+}
+
+export const rejectSubmission = (gameID, history) => dispatch => {
+    axios.post("/api/games/rejectSubmission", { gameID: gameID })
+        .then(res => history.push("/admin"))
+}

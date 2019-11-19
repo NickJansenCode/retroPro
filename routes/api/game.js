@@ -81,6 +81,42 @@ router.post('/submit', (req, res) => {
         })
 })
 
+router.get("/getSubmission/:id", (req, res) => {
+    Game.findOne({ _id: req.params.id })
+        .populate({
+            path: "platform",
+            select: "name"
+        })
+        .then(game => {
+            if (game) {
+                return res.status(200).json({
+                    coverart: game.coverart,
+                    name: game.name,
+                    platform: game.platform.name,
+                    year: game.year,
+                    description: game.description
+                })
+            }
+        })
+})
+
+router.post("/approveSubmission", (req, res) => {
+    Game.findById(req.body.gameID)
+        .then(game => {
+            game.inreviewqueue = false
+            game.save().then(() => {
+                return res.status(200).json({ gameName: game.name })
+            })
+        })
+})
+
+router.post("/rejectSubmission", (req, res) => {
+    Game.findByIdAndDelete(req.body.gameID)
+        .then(() => {
+            return res.status(200).json("Success")
+        })
+})
+
 router.post('/loadGamePageData', (req, res) => {
     Game.findOne({ 'name': req.body.game })
         .populate('platform')

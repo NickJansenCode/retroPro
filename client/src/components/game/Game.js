@@ -36,6 +36,11 @@ class Game extends Component {
 
         axios.post(`/api/games/loadGamePageData`, postData).then(res => {
             console.log(res);
+
+            if (res.data.game.inreviewqueue) {
+                this.props.history.push("/")
+            }
+
             this.setState({
                 game: res.data.game,
                 platform: res.data.game.platform.name,

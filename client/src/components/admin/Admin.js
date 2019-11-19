@@ -108,6 +108,7 @@ class Admin extends Component {
                         </div>
 
                         {
+                            this.state.reports.length > 0 &&
                             this.state.reports.map(report => {
                                 let dateString = report.timestamp.slice(0, report.timestamp.indexOf("T"))
                                 return (
@@ -138,13 +139,18 @@ class Admin extends Component {
                                                     }
                                                 }}>
                                                     Review Report
-                                                </Link>
+                                                            </Link>
                                             </div>
                                         </div>
                                     </div>
                                 )
                             })
-
+                            ||
+                            <p className="row text-muted">
+                                <div className="col-12">
+                                    No active user reports...
+                                </div>
+                            </p>
                         }
 
 
@@ -153,9 +159,11 @@ class Admin extends Component {
                         <div className="row">
                             <div className="col-12">
                                 <h3>Submissions</h3>
+                                <hr />
                             </div>
                         </div>
                         {
+                            this.state.submissions.length > 0 &&
                             this.state.submissions.map(submission => {
                                 return (
                                     <div className="row mt-2">
@@ -182,13 +190,19 @@ class Admin extends Component {
                                                     }
                                                 }}>
                                                     Review Submission
-                                                </Link>
+                                                    </Link>
                                             </div>
                                         </div>
                                     </div>
                                 )
 
                             })
+                            ||
+                            <p className="row text-muted">
+                                <div className="col-12">
+                                    No games in review queue...
+                                </div>
+                            </p>
                         }
                     </div>
                     <div className="col-xs-12 col-s-6 col-md-3">

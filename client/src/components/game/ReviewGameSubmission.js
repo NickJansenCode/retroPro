@@ -24,6 +24,12 @@ class ReviewGameSubmission extends Component {
             // Call API to get report information. //
             axios.get("/api/games/getSubmission/" + gameID)
                 .then(res => {
+
+                    // If the game isn't in the review queue, redirect to admin dashboard. //
+                    if (!res.data.inreviewqueue) {
+                        this.props.history.push("/admin")
+                    }
+
                     this.setState({
                         coverart: res.data.coverart,
                         name: res.data.name,

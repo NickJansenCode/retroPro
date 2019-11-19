@@ -90,6 +90,7 @@ router.get("/getSubmission/:id", (req, res) => {
         .then(game => {
             if (game) {
                 return res.status(200).json({
+                    inreviewqueue: game.inreviewqueue,
                     coverart: game.coverart,
                     name: game.name,
                     platform: game.platform.name,

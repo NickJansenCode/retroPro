@@ -185,7 +185,7 @@ router.post("/banUser", (req, res) => {
     User.findOne({
         name: req.body.name
     })
-        .then(user => {
+        .then(async (user) => {
             if (!user) {
                 return res.status(400).json({ banRemoveName: `User with name ${req.body.name} does not exist` })
             }
@@ -193,6 +193,12 @@ router.post("/banUser", (req, res) => {
                 return res.status(400).json({ banRemoveName: `User with name ${req.body.name} is already banned` })
             }
 
+            await removeUserPresence().then(() => {
+                user.isbanned = true
+                user.save().then(() => {
+                    res.status(200).json("Success")
+                })
+            })
             // Delete friendships containing user's id. //
 
             // Delete game comments containing user's id. //
@@ -214,10 +220,17 @@ router.post("/deleteUser", (req, res) => {
     User.findOne({
         name: req.body.name
     })
-        .then(user => {
+        .then(async (user) => {
             if (!user) {
                 return res.status(400).json({ banRemoveName: `User with name ${req.body.name} does not exist` })
             }
+
+            await removeUserPresence().then(() => {
+
+                user.remove().then(() => {
+                    res.json(200).json("Success")
+                })
+            })
 
         })
 })
@@ -394,6 +407,11 @@ router.post('/login', (req, res) => {
             if (!user) {
                 return res.status(404).json({ emailnotfound: 'Email not found' });
             }
+
+            if (user.isbanned) {
+                return res.status(401).json({ banned: "User is banned" })
+            }
+
             // Check password
             bcrypt.compare(password, user.password).then((isMatch) => {
                 if (isMatch) {
@@ -625,4 +643,8 @@ router.post("/getFriendRequests", (req, res) => {
             return res.json(requests)
         })
 })
+
+async function removeUserPresence(userID) {
+    return "";
+}
 module.exports = router;

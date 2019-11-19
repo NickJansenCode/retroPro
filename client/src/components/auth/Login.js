@@ -92,6 +92,9 @@ class Login extends Component {
                                     {this.state.errors.passwordincorrect}
                                 </span>
                             </div>
+                            <span className={styles.redtext}>
+                                {this.state.errors.banned}
+                            </span>
                             <div className="form-group">
                                 <button className="btn btn-primary w-100 form-control mt-3"
                                     type="submit"

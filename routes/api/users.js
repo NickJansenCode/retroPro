@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const registerValidation = require('../../validation/register');
 const loginValidation = require('../../validation/login');
 const promoteUserValidation = require("../../validation/promoteUser")
+const banRemoveUserValidation = require("../../validation/banRemoveUser")
 const User = require('../../models/User');
 const Role = require("../../models/Role")
 const Game = require('../../models/Game');
@@ -171,6 +172,53 @@ router.post("/promoteUser", (req, res) => {
                     })
 
                 })
+        })
+})
+
+router.post("/banUser", (req, res) => {
+    const { errors, isValid } = banRemoveUserValidation(req.body);
+
+    if (!isValid) {
+        return res.status(400).json(errors);
+    }
+
+    User.findOne({
+        name: req.body.name
+    })
+        .then(user => {
+            if (!user) {
+                return res.status(400).json({ banRemoveName: `User with name ${req.body.name} does not exist` })
+            }
+            else if (user.isbanned) {
+                return res.status(400).json({ banRemoveName: `User with name ${req.body.name} is already banned` })
+            }
+
+            // Delete friendships containing user's id. //
+
+            // Delete game comments containing user's id. //
+
+            // Delete game reviews containing user's id. //
+
+            // Delete profile comments containing user's id. //
+
+        })
+})
+
+router.post("/deleteUser", (req, res) => {
+    const { errors, isValid } = banRemoveUserValidation(req.body);
+
+    if (!isValid) {
+        return res.status(400).json(errors);
+    }
+
+    User.findOne({
+        name: req.body.name
+    })
+        .then(user => {
+            if (!user) {
+                return res.status(400).json({ banRemoveName: `User with name ${req.body.name} does not exist` })
+            }
+
         })
 })
 

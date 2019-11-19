@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Link, withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { promoteUser } from "../../actions/adminActions";
+import { promoteUser, banUser, deleteUser } from "../../actions/adminActions";
 import axios from 'axios'
 
 class Admin extends Component {
@@ -69,7 +69,7 @@ class Admin extends Component {
      */
     banUser = e => {
         e.preventDefault();
-
+        this.props.banUser({ name: this.state.banRemoveName })
     }
 
     /**
@@ -77,7 +77,7 @@ class Admin extends Component {
      */
     deleteUser = e => {
         e.preventDefault();
-
+        this.props.deleteUser({ name: this.state.banRemoveName })
     }
 
     /**
@@ -85,7 +85,7 @@ class Admin extends Component {
      */
     promoteUser = e => {
         e.preventDefault();
-        this.props.promoteUser({ name: this.state.promoteName }, this.props.history)
+        this.props.promoteUser({ name: this.state.promoteName })
     }
 
     render() {
@@ -236,6 +236,8 @@ class Admin extends Component {
 
 Admin.propTypes = {
     promoteUser: PropTypes.func.isRequired,
+    banUser: PropTypes.func.isRequired,
+    deleteUser: PropTypes.func.isRequired,
     auth: PropTypes.object.isRequired,
     errors: PropTypes.object.isRequired
 };
@@ -247,5 +249,5 @@ const mapStateToProps = state => ({
 
 export default connect(
     mapStateToProps,
-    { promoteUser }
+    { promoteUser, banUser, deleteUser }
 )(withRouter(Admin));

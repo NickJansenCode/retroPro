@@ -12,6 +12,25 @@ router.get('/getCategories', (req, res) => {
         })
 });
 
+router.get("/getReport/:id", (req, res) => {
+    UserReport.findById(req.params.id)
+        .populate("reporter")
+        .populate("reported")
+        .populate("reportCategory")
+        .then(report => {
+            if (report) {
+                return res.status(200).json({
+                    reportedName: report.reported.name,
+                    reportedPicture: report.reported.profilepicture,
+                    reporterName: report.reporter.name,
+                    category: report.reportCategory.name,
+                    timestamp: report.timestamp,
+                    text: report.text
+                })
+            }
+        })
+})
+
 router.get("/getActiveReports", (req, res) => {
     UserReport.find({ pending: true })
         .populate({
@@ -55,7 +74,16 @@ router.post("/submitReport", (req, res) => {
                 return res.status(200).json("Success")
             })
         })
+})
 
+router.post("/dismissReport", (req, res) => {
+    UserReport.findById(req.body.reportID)
+        .then(report => {
+            report.pending = false
+            report.save().then(() => {
+                return res.json(200)
+            })
+        })
 })
 
 module.exports = router;

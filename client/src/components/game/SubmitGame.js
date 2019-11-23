@@ -125,7 +125,7 @@ class SubmitGame extends Component {
                                     <select className="form-control" value={this.state.platform} id="platform" onChange={this.onChange}>
                                         {
                                             this.state.platformOptions.map(platform => {
-                                                return (<option value={platform.value} label={platform.label} />)
+                                                return (<option value={platform.value} label={platform.label}>{platform.label}</option>)
                                             })
                                         }
                                     </select>

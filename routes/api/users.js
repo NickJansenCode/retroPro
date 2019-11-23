@@ -90,6 +90,12 @@ router.post('/getByName', (req, res) => {
                 path: 'platform'
             }
         })
+        .populate({
+            path: "lists",
+            populate: {
+                path: "items"
+            }
+        })
         .then((user) => {
             if (user) {
 
@@ -672,6 +678,26 @@ router.post("/createList", (req, res) => {
                 return res.status(200).json("Success")
             })
     })
+})
+
+router.get("/getList/:listID", (req, res) => {
+    List.findOne({
+        _id: req.params.listID
+    })
+        .populate({
+            path: "items",
+            populate: {
+                path: "reviews",
+                select: "rating"
+            }
+        })
+        .then(list => {
+            res.status(200).json({
+                listName: list.name,
+                listDescription: list.description,
+                items: list.items
+            })
+        })
 })
 
 /**

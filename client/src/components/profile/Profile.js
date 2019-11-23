@@ -401,27 +401,58 @@ class Profile extends Component {
                                 <div className="row">
                                     <div className="col-12">
                                         <h2>Lists</h2>
-                                        {
-                                            this.props.auth.user.name == this.props.match.params.username &&
-                                            <Link to={{
-                                                pathname: "/createList",
-                                                state: {
-                                                    userID: this.state.user._id
-                                                }
-                                            }}>
-                                                Create A List
+                                        <p>
+                                            {
+                                                this.props.auth.user.name == this.props.match.params.username &&
+                                                <Link to={{
+                                                    pathname: "/createList",
+                                                    state: {
+                                                        userID: this.state.user._id
+                                                    }
+                                                }}>
+                                                    Create A List
                                             </Link>
-                                        }
+                                            }
+                                        </p>
                                     </div>
                                 </div>
                                 <div className="row">
-                                    {(this.state.lists.length != 0 &&
-                                        this.state.lists.map(item => { })) || (
-                                            <p className="col-12">
-                                                This user has not created any
-                                                lists!
-										</p>
-                                        )}
+                                    {
+                                        (this.state.lists.length != 0 && this.state.lists.map(list => {
+                                            return (
+                                                <div className="col-12">
+                                                    <div className="row">
+                                                        <div className="col-s-12 col-md-4">
+                                                            <img src={list.items[0].coverart} height="100vh" />
+                                                        </div>
+                                                        <div className="col-s-12 col-md-6">
+                                                            <div className="row">
+                                                                <div className="col-12">
+                                                                    <Link to={{
+                                                                        pathname: "/list",
+                                                                        state: {
+                                                                            userName: this.state.user.name,
+                                                                            listID: list._id
+                                                                        }
+                                                                    }}>{list.name}</Link>
+                                                                </div>
+                                                            </div>
+                                                            <div className="row">
+                                                                <div className="col-12">
+                                                                    {list.description}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )
+                                        }))
+                                        ||
+                                        <p className="col-12">
+                                            This user has not created any
+                                            lists!
+                                        </p>
+                                    }
                                 </div>
                             </div>
                             <div className="col-xs-12 col-md-3">

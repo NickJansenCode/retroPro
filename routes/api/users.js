@@ -6,8 +6,10 @@ const registerValidation = require('../../validation/register');
 const loginValidation = require('../../validation/login');
 const promoteUserValidation = require("../../validation/promoteUser")
 const banRemoveUserValidation = require("../../validation/banRemoveUser")
+const listValidation = require("../../validation/list");
 const User = require('../../models/User');
 const Role = require("../../models/Role")
+const List = require("../../models/List");
 const Game = require('../../models/Game');
 const Collection = require('../../models/Collection');
 const ProfileComment = require("../../models/ProfileComment")
@@ -224,10 +226,20 @@ router.post("/deleteUser", (req, res) => {
 
             removeUserPresence(user._id).then(() => {
                 user.remove().then(() => {
-                    res.json(200).json("Success")
+                    res.status(200).json("Success")
                 })
             })
 
+        })
+})
+
+router.get("/loadCollection/:userID", (req, res) => {
+    User.findOne({ _id: req.params.userID })
+        .populate({
+            path: "gameCollection",
+        })
+        .then(user => {
+            return res.status(200).json(user.gameCollection)
         })
 })
 
@@ -638,6 +650,28 @@ router.post("/getFriendRequests", (req, res) => {
             }
             return res.json(requests)
         })
+})
+
+router.post("/createList", (req, res) => {
+
+    const { errors, isValid } = listValidation(req.body);
+
+    if (!isValid) {
+        return res.status(400).json(errors);
+    }
+
+    let list = new List({
+        items: req.body.gameIDs,
+        name: req.body.listName,
+        description: req.body.listDescription
+    })
+
+    list.save().then(savedList => {
+        User.findByIdAndUpdate(req.body.userID, { $push: { lists: savedList._id } })
+            .then(() => {
+                return res.status(200).json("Success")
+            })
+    })
 })
 
 /**

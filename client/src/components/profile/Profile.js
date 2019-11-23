@@ -244,7 +244,7 @@ class Profile extends Component {
 
     render() {
 
-        if (this.state.user.private && this.state.friendshipStatus != "Friends" && this.state.user._id != this.props.auth.user.id) {
+        if (this.state.user.private && this.state.friendshipStatus != "Friends" && this.state.user._id != this.props.auth.user.id && this.props.auth.user.role != "Admin") {
             return (
                 <div className="container">
                     <div className="row">
@@ -399,7 +399,20 @@ class Profile extends Component {
                             </div>
                             <div className="col-xs-12 col-md-3">
                                 <div className="row">
-                                    <h2 className="col-12">Lists</h2>
+                                    <div className="col-12">
+                                        <h2>Lists</h2>
+                                        {
+                                            this.props.auth.user.name == this.props.match.params.username &&
+                                            <Link to={{
+                                                pathname: "/createList",
+                                                state: {
+                                                    userID: this.state.user._id
+                                                }
+                                            }}>
+                                                Create A List
+                                            </Link>
+                                        }
+                                    </div>
                                 </div>
                                 <div className="row">
                                     {(this.state.lists.length != 0 &&

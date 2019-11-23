@@ -101,7 +101,7 @@ class ReportUser extends Component {
                                     <select className="form-control" value={this.state.category} id="category" onChange={this.onChange}>
                                         {
                                             this.state.categoryOptions.map(category => {
-                                                return (<option value={category.value} label={category.label} />)
+                                                return (<option value={category.value} label={category.label}>{category.label}</option>)
                                             })
                                         }
                                     </select>

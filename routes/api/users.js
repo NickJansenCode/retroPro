@@ -12,6 +12,9 @@ const Game = require('../../models/Game');
 const Collection = require('../../models/Collection');
 const ProfileComment = require("../../models/ProfileComment")
 const PasswordRecovery = require('../../models/PasswordRecovery');
+const GameComment = require("../../models/GameComment")
+const Review = require("../../models/Review")
+const UserReport = require("../../models/UserReport")
 const Friendship = require("../../models/Friendship")
 require('dotenv').config();
 
@@ -185,7 +188,7 @@ router.post("/banUser", (req, res) => {
     User.findOne({
         name: req.body.name
     })
-        .then(async (user) => {
+        .then((user) => {
             if (!user) {
                 return res.status(400).json({ banRemoveName: `User with name ${req.body.name} does not exist` })
             }
@@ -193,20 +196,14 @@ router.post("/banUser", (req, res) => {
                 return res.status(400).json({ banRemoveName: `User with name ${req.body.name} is already banned` })
             }
 
-            await removeUserPresence().then(() => {
-                user.isbanned = true
-                user.save().then(() => {
-                    res.status(200).json("Success")
-                })
+            removeUserPresence(user._id).then((result) => {
+                if (result == true) {
+                    user.isbanned = true
+                    user.save().then(() => {
+                        res.status(200).json("Success")
+                    })
+                }
             })
-            // Delete friendships containing user's id. //
-
-            // Delete game comments containing user's id. //
-
-            // Delete game reviews containing user's id. //
-
-            // Delete profile comments containing user's id. //
-
         })
 })
 
@@ -225,8 +222,7 @@ router.post("/deleteUser", (req, res) => {
                 return res.status(400).json({ banRemoveName: `User with name ${req.body.name} does not exist` })
             }
 
-            await removeUserPresence().then(() => {
-
+            removeUserPresence(user._id).then(() => {
                 user.remove().then(() => {
                     res.json(200).json("Success")
                 })
@@ -644,7 +640,16 @@ router.post("/getFriendRequests", (req, res) => {
         })
 })
 
+/**
+ * Removes all comments, reviews, and friendships containing the given user's ID.
+ */
 async function removeUserPresence(userID) {
-    return "";
+    await GameComment.deleteMany({ commenter: userID })
+    await Review.deleteMany({ reviewer: userID })
+    await ProfileComment.deleteMany({ commenter: userID })
+    await Friendship.deleteMany({ $or: [{ friendA: userID }, { friendB: userID }] })
+    await UserReport.deleteMany({ reported: userID })
+    return true;
 }
+
 module.exports = router;

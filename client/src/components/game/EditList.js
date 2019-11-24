@@ -2,10 +2,10 @@ import React, { Component } from "react";
 import { Link, withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { createList } from "../../actions/listActions"
+import { editList } from "../../actions/listActions"
 import Axios from "axios";
 
-class CreateList extends Component {
+class EditList extends Component {
 
     constructor() {
         super();
@@ -20,14 +20,33 @@ class CreateList extends Component {
 
     componentDidMount() {
         const userID = this.props.location.state == undefined ? "" : this.props.location.state.userID
+        const listID = this.props.location.state == undefined ? "" : this.props.location.state.listID
 
         if (userID !== "") {
             Axios.get("/api/users/loadCollection/" + userID)
                 .then(res => {
-                    this.setState({
-                        collection: res.data
-                    })
+                    let collection = res.data;
+                    Axios.get("/api/users/getList/" + listID)
+                        .then(res => {
+
+                            let listIDs = res.data.items.map(item => item._id);
+
+
+                            collection = collection.filter(item => {
+                                return !listIDs.includes(item._id)
+                            })
+
+                            this.setState({
+                                name: res.data.listName,
+                                description: res.data.listDescription,
+                                collection: collection,
+                                selectedGames: res.data.items
+                            })
+
+                        })
                 })
+
+
         }
         else {
             this.props.history.push("/")
@@ -90,6 +109,7 @@ class CreateList extends Component {
         })
     }
 
+
     saveList = e => {
         e.preventDefault()
 
@@ -100,10 +120,11 @@ class CreateList extends Component {
                 return game._id
             }),
             userName: this.props.auth.user.name,
-            userID: this.props.auth.user.id
+            userID: this.props.auth.user.id,
+            listID: this.props.location.state.listID
         }
 
-        this.props.createList(listData, this.props.history);
+        this.props.editList(listData, this.props.history)
     }
 
     render() {
@@ -111,7 +132,7 @@ class CreateList extends Component {
             <div className="container-fluid">
                 <div className="row">
                     <div className="col-6">
-                        <h1>Create New List</h1>
+                        <h1>Edit List</h1>
                     </div>
                 </div>
                 <div className="row">
@@ -128,7 +149,7 @@ class CreateList extends Component {
                                 List Name
                             </label>
                             <div className="col-xs-12 col-md-10">
-                                <input type="text" id="name" onChange={this.onChange} value={this.name} className="form-control" placeholder="Enter a name..." />
+                                <input type="text" id="name" onChange={this.onChange} value={this.state.name} className="form-control" placeholder="Enter a name..." />
                                 <span className="text-danger">
                                     {this.state.errors.name}
                                 </span>
@@ -238,8 +259,8 @@ class CreateList extends Component {
     }
 }
 
-CreateList.propTypes = {
-    createList: PropTypes.func.isRequired,
+EditList.propTypes = {
+    editList: PropTypes.func.isRequired,
     auth: PropTypes.object.isRequired,
     errors: PropTypes.object.isRequired
 };
@@ -251,5 +272,5 @@ const mapStateToProps = state => ({
 
 export default connect(
     mapStateToProps,
-    { createList }
-)(withRouter(CreateList));
+    { editList }
+)(withRouter(EditList));

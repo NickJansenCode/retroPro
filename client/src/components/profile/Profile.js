@@ -420,9 +420,9 @@ class Profile extends Component {
                                     {
                                         (this.state.lists.length != 0 && this.state.lists.map(list => {
                                             return (
-                                                <div className="col-12">
+                                                <div className="col-12 mt-2">
                                                     <div className="row">
-                                                        <div className="col-s-12 col-md-4">
+                                                        <div className="col-s-12 col-md-6">
                                                             <img src={list.items[0].coverart} height="100vh" />
                                                         </div>
                                                         <div className="col-s-12 col-md-6">
@@ -439,7 +439,22 @@ class Profile extends Component {
                                                             </div>
                                                             <div className="row">
                                                                 <div className="col-12">
-                                                                    {list.description}
+                                                                    {list.description.substring(0, 50)}
+                                                                    {list.description.length > 50 ? "..." : ""}
+                                                                </div>
+                                                                <div className="col-12">
+                                                                    {
+                                                                        this.props.auth.user.name == this.props.match.params.username &&
+                                                                        <Link className="btn btn-primary" to={{
+                                                                            pathname: "/editList",
+                                                                            state: {
+                                                                                userID: this.state.user._id,
+                                                                                listID: list._id
+                                                                            }
+                                                                        }}>
+                                                                            Edit List
+                                                                        </Link>
+                                                                    }
                                                                 </div>
                                                             </div>
                                                         </div>

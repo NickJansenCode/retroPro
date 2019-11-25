@@ -242,6 +242,22 @@ class Profile extends Component {
 
     }
 
+    removeList = id => e => {
+        e.preventDefault()
+
+        axios.post('/api/users/deleteList', { listID: id })
+            .then(() => {
+                let lists = this.state.lists.filter(list => {
+                    return list._id != id
+                })
+
+                this.setState({
+                    lists: lists
+                })
+
+            })
+    }
+
     render() {
 
         if (this.state.user.private && this.state.friendshipStatus != "Friends" && this.state.user._id != this.props.auth.user.id && this.props.auth.user.role != "Admin") {
@@ -442,7 +458,7 @@ class Profile extends Component {
                                                                     {list.description.substring(0, 50)}
                                                                     {list.description.length > 50 ? "..." : ""}
                                                                 </div>
-                                                                <div className="col-12">
+                                                                <div className="col-s-12 col-md-6">
                                                                     {
                                                                         this.props.auth.user.name == this.props.match.params.username &&
                                                                         <Link className="btn btn-primary" to={{
@@ -452,8 +468,15 @@ class Profile extends Component {
                                                                                 listID: list._id
                                                                             }
                                                                         }}>
-                                                                            Edit List
+                                                                            Edit
                                                                         </Link>
+                                                                    }
+                                                                </div>
+                                                                <div className="col-s-12 col-md-6">
+                                                                    {this.props.auth.user.name == this.props.match.params.username &&
+                                                                        <button className="btn btn-danger" onClick={this.removeList(list._id)}>
+                                                                            Delete
+                                                                        </button>
                                                                     }
                                                                 </div>
                                                             </div>

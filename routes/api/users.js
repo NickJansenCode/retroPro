@@ -720,6 +720,12 @@ router.get("/getList/:listID", (req, res) => {
         })
 })
 
+router.post("/deleteList", (req, res) => {
+    List.findOneAndDelete({ _id: req.body.listID }).then(() => {
+        return res.status(200).json("Success")
+    })
+})
+
 /**
  * Removes all comments, reviews, and friendships containing the given user's ID.
  */

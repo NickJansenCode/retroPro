@@ -50,3 +50,6 @@ if (process.env.ENVIRONMENT == 'production') {
 }
 
 app.listen(port, () => console.log(`Server running on port ${port}!`));
+
+// Export for testing. //
+module.exports = app; 

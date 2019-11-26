@@ -28,6 +28,7 @@ import ReviewGameSubmission from "./components/game/ReviewGameSubmission";
 import CreateList from "./components/game/CreateList";
 import List from "./components/game/List";
 import EditList from "./components/game/EditList"
+import FindStore from "./components/findStore/FindStore";
 
 
 if (localStorage.jwtToken) {
@@ -67,6 +68,7 @@ class App extends Component {
                         <PrivateRoute exact path="/List" component={List} />
                         <PrivateRoute exact path="/editList" component={EditList} />
                         <PrivateRoute exact path="/admin" component={Admin} />
+                        <PrivateRoute exact path="/findstore" component={FindStore} />
                     </div>
                 </Router>
             </Provider>

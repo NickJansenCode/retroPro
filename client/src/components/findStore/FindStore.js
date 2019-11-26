@@ -64,7 +64,7 @@ class FindStore extends Component {
 
             service.nearbySearch({
                 location: address,
-                radius: 10000,
+                radius: 50000,
                 types: ['store'],
                 keyword: 'video games'
             }, this.callback);

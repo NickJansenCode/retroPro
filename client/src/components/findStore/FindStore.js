@@ -51,7 +51,7 @@ class FindStore extends Component {
 
         service.nearbySearch({
             location: address,
-            radius: 50000,
+            radius: 10000,
             types: ['store'],
             keyword: 'video game'
         }, this.callback);
@@ -64,7 +64,7 @@ class FindStore extends Component {
 
             service.nearbySearch({
                 location: address,
-                radius: 50000,
+                radius: 10000,
                 types: ['store'],
                 keyword: 'video games'
             }, this.callback);
@@ -160,7 +160,7 @@ class FindStore extends Component {
                                 lat: this.state.userLat,
                                 lng: this.state.userLong
                             }}
-                            defaultZoom={10}
+                            defaultZoom={12}
                             onGoogleApiLoaded={this.apiHasLoaded}
                             onChange={this.onChange}
                             places={this.state.markers}

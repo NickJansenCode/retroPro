@@ -680,6 +680,26 @@ router.post("/createList", (req, res) => {
     })
 })
 
+router.post("/editList", (req, res) => {
+    const { errors, isValid } = listValidation(req.body);
+
+    if (!isValid) {
+        return res.status(400).json(errors);
+    }
+
+    List.findOne({ _id: req.body.listID })
+        .then(list => {
+            list.name = req.body.listName
+            list.description = req.body.listDescription
+            list.items = req.body.gameIDs
+
+            list.save()
+                .then(() => {
+                    return res.status(200).json("Success")
+                })
+        })
+})
+
 router.get("/getList/:listID", (req, res) => {
     List.findOne({
         _id: req.params.listID
@@ -698,6 +718,12 @@ router.get("/getList/:listID", (req, res) => {
                 items: list.items
             })
         })
+})
+
+router.post("/deleteList", (req, res) => {
+    List.findOneAndDelete({ _id: req.body.listID }).then(() => {
+        return res.status(200).json("Success")
+    })
 })
 
 /**

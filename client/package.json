@@ -7,8 +7,11 @@
     "base64-img": "^1.0.4",
     "classnames": "^2.2.6",
     "fs": "0.0.1-security",
+    "google-map-react": "^1.1.5",
+    "google-maps-react": "^2.0.2",
     "is-image-url": "^1.1.8",
     "jwt-decode": "^2.2.0",
+    "material-ui": "^0.20.2",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
     "react-notification-badge": "^1.5.1",
@@ -19,7 +22,8 @@
     "react-select": "^3.0.8",
     "react-star-rating-component": "^1.4.1",
     "redux": "^4.0.4",
-    "redux-thunk": "^2.3.0"
+    "redux-thunk": "^2.3.0",
+    "styled-components": "^4.4.1"
   },
   "scripts": {
     "start": "react-scripts start",

@@ -242,6 +242,22 @@ class Profile extends Component {
 
     }
 
+    removeList = id => e => {
+        e.preventDefault()
+
+        axios.post('/api/users/deleteList', { listID: id })
+            .then(() => {
+                let lists = this.state.lists.filter(list => {
+                    return list._id != id
+                })
+
+                this.setState({
+                    lists: lists
+                })
+
+            })
+    }
+
     render() {
 
         if (this.state.user.private && this.state.friendshipStatus != "Friends" && this.state.user._id != this.props.auth.user.id && this.props.auth.user.role != "Admin") {
@@ -420,9 +436,9 @@ class Profile extends Component {
                                     {
                                         (this.state.lists.length != 0 && this.state.lists.map(list => {
                                             return (
-                                                <div className="col-12">
+                                                <div className="col-12 mt-2">
                                                     <div className="row">
-                                                        <div className="col-s-12 col-md-4">
+                                                        <div className="col-s-12 col-md-6">
                                                             <img src={list.items[0].coverart} height="100vh" />
                                                         </div>
                                                         <div className="col-s-12 col-md-6">
@@ -439,7 +455,29 @@ class Profile extends Component {
                                                             </div>
                                                             <div className="row">
                                                                 <div className="col-12">
-                                                                    {list.description}
+                                                                    {list.description.substring(0, 50)}
+                                                                    {list.description.length > 50 ? "..." : ""}
+                                                                </div>
+                                                                <div className="col-s-12 col-md-6">
+                                                                    {
+                                                                        this.props.auth.user.name == this.props.match.params.username &&
+                                                                        <Link className="btn btn-primary" to={{
+                                                                            pathname: "/editList",
+                                                                            state: {
+                                                                                userID: this.state.user._id,
+                                                                                listID: list._id
+                                                                            }
+                                                                        }}>
+                                                                            Edit
+                                                                        </Link>
+                                                                    }
+                                                                </div>
+                                                                <div className="col-s-12 col-md-6">
+                                                                    {this.props.auth.user.name == this.props.match.params.username &&
+                                                                        <button className="btn btn-danger" onClick={this.removeList(list._id)}>
+                                                                            Delete
+                                                                        </button>
+                                                                    }
                                                                 </div>
                                                             </div>
                                                         </div>

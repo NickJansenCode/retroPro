@@ -3,6 +3,7 @@ const Game = require('../../models/Game');
 const User = require('../../models/User');
 const Review = require('../../models/Review');
 const Comment = require('../../models/GameComment');
+const List = require("../../models/List")
 const gameSubmissionValidation = require('../../validation/gameSubmission');
 const express = require('express');
 const router = express.Router();
@@ -180,8 +181,25 @@ router.post('/toggleGameInCollection', (req, res) => {
                 return res.status(400).json({ message: 'Failed to find game.' });
             } else {
                 if (req.body.inCollection == true) {
-                    User.findByIdAndUpdate(req.body.user.id, { $pull: { gameCollection: game._id, highlights: game._id } }, () => {
-                        res.json(false);
+                    User.findByIdAndUpdate(req.body.user.id, { $pull: { gameCollection: game._id, highlights: game._id } }, (err, user) => {
+
+                        // Remove the game from all of the user's lists. If the list ends up being empty, delete the list. //
+                        List.find({ _id: user.lists })
+                            .then((lists) => {
+                                lists.forEach(list => {
+                                    list.items = list.items.filter(item => {
+                                        return item.toString() != game._id.toString()
+                                    })
+                                    list.save().then(savedList => {
+                                        if (savedList.items.length < 1) {
+                                            savedList.remove()
+                                        }
+                                    })
+                                })
+                            })
+                            .then(() => {
+                                res.json(false);
+                            })
                     });
                 } else {
                     User.findByIdAndUpdate(req.body.user.id, { $push: { gameCollection: game._id } }, () => {

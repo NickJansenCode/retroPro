@@ -1,10 +1,27 @@
+// NPM IMPORTS //
 const express = require('express');
-const router = express.Router();
+
+// VALIDATION IMPORTS //
 const reportSubmissionValidation = require('../../validation/reportSubmission');
+
+// MODEL IMPORTS //
 const ReportCategory = require("../../models/ReportCategory")
 const User = require("../../models/User")
 const UserReport = require("../../models/UserReport")
 
+/**
+ * Express router to mount report related actions on.
+ * @type {express.Router}
+ * @const
+ * @namespace routes/api/reports
+ */
+const router = express.Router();
+
+/**
+ * @route GET /api/reports/getCategories
+ * @desc Route serving a GET request to retrieve all report category documents.
+ * @returns Report Category documents. @see ReportCategory
+ */
 router.get('/getCategories', (req, res) => {
     ReportCategory.find({})
         .then(categories => {
@@ -12,6 +29,11 @@ router.get('/getCategories', (req, res) => {
         })
 });
 
+/**
+ * @route GET /api/reports/getReport/:id
+ * @desc Route serving a GET request to retrieve a report documents.
+ * @returns A report document. @see UserReport
+ */
 router.get("/getReport/:id", (req, res) => {
     UserReport.findById(req.params.id)
         .populate("reporter")
@@ -31,6 +53,11 @@ router.get("/getReport/:id", (req, res) => {
         })
 })
 
+/**
+ * @route GET /api/reports/getActiveReports
+ * @desc Route serving a GET request to retrieve all active user report documents.
+ * @returns Report documents. @see UserReport
+ */
 router.get("/getActiveReports", (req, res) => {
     UserReport.find({ pending: true })
         .populate({
@@ -47,6 +74,11 @@ router.get("/getActiveReports", (req, res) => {
         })
 })
 
+/**
+ * @route POST /api/reports/submitReport
+ * @desc Route serving a POST request to create a report document.
+ * @returns Boolean success.
+ */
 router.post("/submitReport", (req, res) => {
     const { errors, isValid } = reportSubmissionValidation(req.body)
 
@@ -76,6 +108,11 @@ router.post("/submitReport", (req, res) => {
         })
 })
 
+/**
+ * @route POST /api/reports/dismissReport
+ * @desc Route serving a POST request to dismiss an active report.
+ * @returns Boolean success.
+ */
 router.post("/dismissReport", (req, res) => {
     UserReport.findById(req.body.reportID)
         .then(report => {
@@ -86,4 +123,5 @@ router.post("/dismissReport", (req, res) => {
         })
 })
 
+// Export the router. //
 module.exports = router;

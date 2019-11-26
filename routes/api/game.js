@@ -1,14 +1,48 @@
+// NPM IMPORTS //
+const express = require('express');
+
+// VALIDATION IMPORTS //
+const gameSubmissionValidation = require('../../validation/gameSubmission');
+
+// MODEL IMPORTS //
+// eslint-disable-next-line no-unused-vars
 const Platform = require('../../models/Platform');
 const Game = require('../../models/Game');
 const User = require('../../models/User');
 const Review = require('../../models/Review');
 const Comment = require('../../models/GameComment');
 const List = require("../../models/List")
-const gameSubmissionValidation = require('../../validation/gameSubmission');
-const express = require('express');
+
+/**
+ * Express router to mount game related actions on.
+ * @type {express.Router}
+ * @const
+ * @namespace routes/api/game
+ */
 const router = express.Router();
 
+//........................................................................................................................
+//.....GGGGGGG....EEEEEEEEEEE.TTTTTTTTTTT.....RRRRRRRRRR.....OOOOOOO.....UUUU...UUUU..TTTTTTTTTTEEEEEEEEEEEE..SSSSSSS.....
+//...GGGGGGGGGG...EEEEEEEEEEE.TTTTTTTTTTT.....RRRRRRRRRRR...OOOOOOOOOO...UUUU...UUUU..TTTTTTTTTTEEEEEEEEEEEE.SSSSSSSSS....
+//..GGGGGGGGGGGG..EEEEEEEEEEE.TTTTTTTTTTT.....RRRRRRRRRRR..OOOOOOOOOOOO..UUUU...UUUU..TTTTTTTTTTEEEEEEEEEEEE.SSSSSSSSSS...
+//..GGGGG..GGGGG..EEEE...........TTTT.........RRRR...RRRRR.OOOOO..OOOOO..UUUU...UUUU.....TTTT....EEEE.......ESSSS..SSSS...
+//.GGGGG....GGG...EEEE...........TTTT.........RRRR...RRRRRROOOO....OOOOO.UUUU...UUUU.....TTTT....EEEE.......ESSSS.........
+//.GGGG...........EEEEEEEEEE.....TTTT.........RRRRRRRRRRR.ROOO......OOOO.UUUU...UUUU.....TTTT....EEEEEEEEEE..SSSSSSS......
+//.GGGG..GGGGGGGG.EEEEEEEEEE.....TTTT.........RRRRRRRRRRR.ROOO......OOOO.UUUU...UUUU.....TTTT....EEEEEEEEEE...SSSSSSSSS...
+//.GGGG..GGGGGGGG.EEEEEEEEEE.....TTTT.........RRRRRRRR....ROOO......OOOO.UUUU...UUUU.....TTTT....EEEEEEEEEE.....SSSSSSS...
+//.GGGGG.GGGGGGGG.EEEE...........TTTT.........RRRR.RRRR...ROOOO....OOOOO.UUUU...UUUU.....TTTT....EEEE..............SSSSS..
+//..GGGGG....GGGG.EEEE...........TTTT.........RRRR..RRRR...OOOOO..OOOOO..UUUU...UUUU.....TTTT....EEEE.......ESSS....SSSS..
+//..GGGGGGGGGGGG..EEEEEEEEEEE....TTTT.........RRRR..RRRRR..OOOOOOOOOOOO..UUUUUUUUUUU.....TTTT....EEEEEEEEEEEESSSSSSSSSSS..
+//...GGGGGGGGGG...EEEEEEEEEEE....TTTT.........RRRR...RRRRR..OOOOOOOOOO....UUUUUUUUU......TTTT....EEEEEEEEEEE.SSSSSSSSSS...
+//.....GGGGGGG....EEEEEEEEEEE....TTTT.........RRRR....RRRR....OOOOOO.......UUUUUUU.......TTTT....EEEEEEEEEEE..SSSSSSSS....
+//........................................................................................................................
 
+/**
+ * @route GET /api/games/search/:name
+ * @desc Route serving game search functionality. Searches for
+ * and returns game records based on their name.
+ * @returns Game records. @see Game
+ */
 router.get('/search/:name', (req, res) => {
     Game.find({ 'name': { $regex: '.*' + req.params.name + '.*', $options: 'i' }, 'inreviewqueue': false })
         .populate({
@@ -23,6 +57,12 @@ router.get('/search/:name', (req, res) => {
         });
 });
 
+/**
+ * @route GET /api/games/getSubmissions
+ * @desc Route serving a GET request for loading
+ * all currently pending game submissions.
+ * @returns Game Records @see Game
+ */
 router.get("/getSubmissions", (req, res) => {
     Game.find({ inreviewqueue: true })
         .then(games => {
@@ -30,6 +70,54 @@ router.get("/getSubmissions", (req, res) => {
         })
 })
 
+/**
+ * @route GET /api/games/getSubmission/:id
+ * @desc Route serving a GET request to get the details for a 
+ * game submission.
+ * @returns A Game Record. @see Game
+ */
+router.get("/getSubmission/:id", (req, res) => {
+    Game.findOne({ _id: req.params.id })
+        .populate({
+            path: "platform",
+            select: "name"
+        })
+        .then(game => {
+            if (game) {
+                return res.status(200).json({
+                    inreviewqueue: game.inreviewqueue,
+                    coverart: game.coverart,
+                    name: game.name,
+                    platform: game.platform.name,
+                    year: game.year,
+                    description: game.description
+                })
+            }
+        })
+})
+
+//...................................................................................................................................
+//.PPPPPPPPP.....OOOOOOO......SSSSSSS....STTTTTTTTTT..... RRRRRRRRR.....OOOOOOO.....OUUU...UUUU..UTTTTTTTTTTTEEEEEEEEEE..SSSSSSS.....
+//.PPPPPPPPPP...OOOOOOOOOO...OSSSSSSSS...STTTTTTTTTT..... RRRRRRRRRR...OOOOOOOOOO...OUUU...UUUU..UTTTTTTTTTTTEEEEEEEEEE.ESSSSSSSS....
+//.PPPPPPPPPPP.POOOOOOOOOOO..OSSSSSSSSS..STTTTTTTTTT..... RRRRRRRRRR..ROOOOOOOOOOO..OUUU...UUUU..UTTTTTTTTTTTEEEEEEEEEE.ESSSSSSSSS...
+//.PPPP...PPPP.POOOO..OOOOO.OOSSS..SSSS.....TTTT......... RRR...RRRRR.ROOOO..OOOOO..OUUU...UUUU.....TTTT....TEEE.......EESSS..SSSS...
+//.PPPP...PPPPPPOOO....OOOOOOOSSS...........TTTT......... RRR...RRRRRRROOO....OOOOO.OUUU...UUUU.....TTTT....TEEE.......EESSS.........
+//.PPPPPPPPPPPPPOO......OOOO.OSSSSSS........TTTT......... RRRRRRRRRR.RROO......OOOO.OUUU...UUUU.....TTTT....TEEEEEEEEE..ESSSSSS......
+//.PPPPPPPPPP.PPOO......OOOO..SSSSSSSSS.....TTTT......... RRRRRRRRRR.RROO......OOOO.OUUU...UUUU.....TTTT....TEEEEEEEEE...SSSSSSSSS...
+//.PPPPPPPPP..PPOO......OOOO....SSSSSSS.....TTTT......... RRRRRRR....RROO......OOOO.OUUU...UUUU.....TTTT....TEEEEEEEEE.....SSSSSSS...
+//.PPPP.......PPOOO....OOOOO.......SSSSS....TTTT......... RRR.RRRR...RROOO....OOOOO.OUUU...UUUU.....TTTT....TEEE..............SSSSS..
+//.PPPP........POOOO..OOOOO.OOSS....SSSS....TTTT......... RRR..RRRR...ROOOO..OOOOO..OUUU...UUUU.....TTTT....TEEE.......EESS....SSSS..
+//.PPPP........POOOOOOOOOOO.OOSSSSSSSSSS....TTTT......... RRR..RRRRR..ROOOOOOOOOOO..OUUUUUUUUUU.....TTTT....TEEEEEEEEEEEESSSSSSSSSS..
+//.PPPP.........OOOOOOOOOO...OSSSSSSSSS.....TTTT......... RRR...RRRRR..OOOOOOOOOO....UUUUUUUUU......TTTT....TEEEEEEEEEE.ESSSSSSSSS...
+//.PPPP...........OOOOOO......SSSSSSSS......TTTT......... RRR....RRRR....OOOOOO.......UUUUUUU.......TTTT....TEEEEEEEEEE..SSSSSSSS....
+//...................................................................................................................................
+
+/**
+ * @route POST /api/games/
+ * @desc Route serving a POST request to create a new game record.
+ * @returns Boolean success
+ * @deprecated
+ */
 router.post('/', (req, res) => {
     const gameDetails = {
         year: req.body.year,
@@ -51,6 +139,11 @@ router.post('/', (req, res) => {
         });
 });
 
+/**
+ * @route POST /api/games/submit
+ * @desc Route serving a POST request to create a new game submission.
+ * @returns Boolean success.
+ */
 router.post('/submit', (req, res) => {
     const { errors, isValid } = gameSubmissionValidation(req.body);
 
@@ -82,26 +175,11 @@ router.post('/submit', (req, res) => {
         })
 })
 
-router.get("/getSubmission/:id", (req, res) => {
-    Game.findOne({ _id: req.params.id })
-        .populate({
-            path: "platform",
-            select: "name"
-        })
-        .then(game => {
-            if (game) {
-                return res.status(200).json({
-                    inreviewqueue: game.inreviewqueue,
-                    coverart: game.coverart,
-                    name: game.name,
-                    platform: game.platform.name,
-                    year: game.year,
-                    description: game.description
-                })
-            }
-        })
-})
-
+/**
+ * @route POST /api/games/approveSubmission
+ * @desc Route serving a POST request to approve a game submission.
+ * @returns The name of the game who's submission is being approved.
+ */
 router.post("/approveSubmission", (req, res) => {
     Game.findById(req.body.gameID)
         .then(game => {
@@ -112,6 +190,11 @@ router.post("/approveSubmission", (req, res) => {
         })
 })
 
+/**
+ * @route POST /api/games/rejectSubmission
+ * @desc Route serving a POST request to reject a game submission.
+ * @returns Boolean success.
+ */
 router.post("/rejectSubmission", (req, res) => {
     Game.findByIdAndDelete(req.body.gameID)
         .then(() => {
@@ -119,6 +202,11 @@ router.post("/rejectSubmission", (req, res) => {
         })
 })
 
+/**
+ * @route POST /api/games/
+ * @desc Route serving a
+ * @returns
+ */
 router.post('/loadGamePageData', (req, res) => {
     Game.findOne({ 'name': req.body.game })
         .populate('platform')
@@ -155,6 +243,13 @@ router.post('/loadGamePageData', (req, res) => {
         });
 });
 
+/**
+ * @route POST /api/games/toggleGamePlayed
+ * @desc Route serving a POST request to toggle a game's played status for the
+ * requesting user.
+ * @returns Boolean representing whether or not the game has been played, after the
+ * toggle.
+ */
 router.post('/toggleGamePlayed', (req, res) => {
     Game.findOne({ 'name': req.body.game })
         .then((game) => {
@@ -174,6 +269,13 @@ router.post('/toggleGamePlayed', (req, res) => {
         });
 });
 
+/**
+ * @route POST /api/games/toggleGameInCollection
+ * @desc Route serving a POST request to toggle a game's presence in the
+ * requesting user's collection.
+ * @returns Boolean representing whether or not the game is in the user's collection
+ * after the toggle.
+ */
 router.post('/toggleGameInCollection', (req, res) => {
     Game.findOne({ 'name': req.body.game })
         .then((game) => {
@@ -210,6 +312,13 @@ router.post('/toggleGameInCollection', (req, res) => {
         });
 });
 
+/**
+ * @route POST /api/games/toggleGameInWishlist
+ * @desc Route serving a POST request to toggle a game's presence
+ * in the requesting user's wishlist.
+ * @returns Boolean representing whether or not the game is in the user's wishlist
+ * after the toggle.
+ */
 router.post('/toggleGameInWishlist', (req, res) => {
     Game.findOne({ 'name': req.body.game })
         .then((game) => {
@@ -229,6 +338,11 @@ router.post('/toggleGameInWishlist', (req, res) => {
         });
 });
 
+/**
+ * @route POST /api/games/addComment
+ * @desc Route serving a POST request for adding a comment to a game's page.
+ * @returns The game's comments after the new comment has been added.
+ */
 router.post('/addComment', (req, res) => {
     const commentDetails = {
         commenter: req.body.userId,
@@ -255,6 +369,11 @@ router.post('/addComment', (req, res) => {
     });
 });
 
+/**
+ * @route POST /api/games/
+ * @desc Route serving a POST request to add a review to a game's page.
+ * @returns The game's reviews after the new review has been added.
+ */
 router.post('/addReview', (req, res) => {
     const reviewDetails = {
         reviewer: req.body.userId,
@@ -283,5 +402,5 @@ router.post('/addReview', (req, res) => {
     });
 });
 
-
+// Export the router. //
 module.exports = router;

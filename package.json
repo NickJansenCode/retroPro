@@ -1,35 +1,39 @@
 {
-  "name": "retropro",
-  "version": "1.0.0",
-  "description": "retroPro game collection application!",
-  "main": "server.js",
-  "scripts": {
-    "client-install": "npm install --prefix client",
-    "start": "node server.js",
-    "server": "nodemon server.js",
-    "client": "npm start --prefix client",
-    "dev": "concurrently \"npm run server\" \"npm run client\""
-  },
-  "author": "Nick Jansen",
-  "license": "MIT",
-  "dependencies": {
-    "bcryptjs": "^2.4.3",
-    "body-parser": "^1.19.0",
-    "concurrently": "^4.1.2",
-    "cors": "^2.8.5",
-    "dotenv": "^8.2.0",
-    "express": "^4.17.1",
-    "is-empty": "^1.2.0",
-    "is-image-url": "^1.1.8",
-    "jsonwebtoken": "^8.5.1",
-    "mongoose": "^5.7.0",
-    "passport": "^0.4.0",
-    "passport-jwt": "^4.0.0",
-    "validator": "^11.1.0"
-  },
-  "devDependencies": {
-    "eslint": "^6.6.0",
-    "eslint-config-google": "^0.14.0",
-    "eslint-plugin-react": "^7.16.0"
-  }
+	"name": "retropro",
+	"version": "1.0.0",
+	"description": "retroPro game collection application!",
+	"main": "server.js",
+	"scripts": {
+		"client-install": "npm install --prefix client",
+		"start": "node server.js",
+		"server": "nodemon server.js",
+		"client": "npm start --prefix client",
+		"dev": "concurrently \"npm run server\" \"npm run client\"",
+		"test": "mocha"
+	},
+	"author": "Nick Jansen",
+	"license": "MIT",
+	"dependencies": {
+		"bcryptjs": "^2.4.3",
+		"body-parser": "^1.19.0",
+		"concurrently": "^4.1.2",
+		"cors": "^2.8.5",
+		"dotenv": "^8.2.0",
+		"express": "^4.17.1",
+		"is-empty": "^1.2.0",
+		"is-image-url": "^1.1.8",
+		"jsonwebtoken": "^8.5.1",
+		"mongoose": "^5.7.0",
+		"passport": "^0.4.0",
+		"passport-jwt": "^4.0.0",
+		"validator": "^11.1.0"
+	},
+	"devDependencies": {
+		"chai": "^3.5.0",
+		"chai-http": "^2.0.1",
+		"eslint": "^6.6.0",
+		"eslint-config-google": "^0.14.0",
+		"eslint-plugin-react": "^7.16.0",
+		"mocha": "^6.2.2"
+	}
 }

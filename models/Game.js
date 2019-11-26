@@ -1,6 +1,10 @@
+// NPM IMPORTS //
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+/**
+ * Defines the document schema for a Game.
+ */
 const GameSchema = new Schema({
     platform: {
         type: Schema.Types.ObjectId,
@@ -39,4 +43,6 @@ const GameSchema = new Schema({
     },
 });
 
+// Expor the document model.
+// eslint-disable-next-line no-undef
 module.exports = Game = mongoose.model('game', GameSchema);

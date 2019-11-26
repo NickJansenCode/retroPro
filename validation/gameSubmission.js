@@ -1,7 +1,11 @@
+// NPM IMPORTS //
 const Validator = require('validator');
 const IsImageUrl = require("is-image-url")
 const isEmpty = require('is-empty');
 
+/**
+ * Function to validate input on the game submission input.
+ */
 module.exports = function validateGameSubmissionInput(data) {
     const errors = {};
 
@@ -13,7 +17,7 @@ module.exports = function validateGameSubmissionInput(data) {
 
     if (Validator.isEmpty(data.name)) {
         errors.name = 'Name field is required.';
-    };
+    }
 
     if (Validator.isEmpty(data.coverart)) {
         errors.coverart = "Cover Art field is required."
@@ -37,6 +41,6 @@ module.exports = function validateGameSubmissionInput(data) {
     return {
         errors,
         isValid: isEmpty(errors),
-    };
+    }
 
 };

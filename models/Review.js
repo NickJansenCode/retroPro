@@ -1,6 +1,10 @@
+// NPM IMPORTS //
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+/**
+ * Defines the document schema for a Review.
+ */
 const ReviewSchema = new Schema({
     reviewer: {
         type: Schema.Types.ObjectId, ref: 'users',
@@ -19,4 +23,6 @@ const ReviewSchema = new Schema({
     },
 });
 
+// Export the document schema. //
+// eslint-disable-next-line no-undef
 module.exports = Review = mongoose.model('review', ReviewSchema);

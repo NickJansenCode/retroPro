@@ -1,6 +1,10 @@
+// NPM IMPORTS //
 const Validator = require('validator');
 const isEmpty = require('is-empty');
 
+/**
+ * Function to validate input on the list creation input.
+ */
 module.exports = function validateCreateListInput(data) {
     const errors = {};
 
@@ -10,11 +14,11 @@ module.exports = function validateCreateListInput(data) {
 
     if (Validator.isEmpty(data.listName)) {
         errors.name = 'List name field is required.';
-    };
+    }
 
     if (Validator.isEmpty(data.listDescription)) {
         errors.description = 'List description field is required.';
-    };
+    }
 
     if (data.gameIDs.length == 0) {
         errors.games = "You must select at least one game!";

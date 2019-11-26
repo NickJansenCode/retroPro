@@ -1,6 +1,10 @@
+// NPM IMPORTS //
 const Validator = require('validator');
 const isEmpty = require('is-empty');
 
+/**
+ * Function to validate input on the registration input.
+ */
 module.exports = function validateRegisterInput(data) {
     const errors = {};
 
@@ -13,7 +17,7 @@ module.exports = function validateRegisterInput(data) {
 
     if (Validator.isEmpty(data.name)) {
         errors.name = 'Name field is required.';
-    };
+    }
 
     if (Validator.isEmpty(data.email)) {
         errors.email = 'Email field is required.';

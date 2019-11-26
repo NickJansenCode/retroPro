@@ -1,6 +1,10 @@
+// NPM IMPORTS //
 const Validator = require('validator');
 const isEmpty = require('is-empty');
 
+/**
+ * Function to validate input on the login input. //
+ */
 module.exports = function validateLoginInput(data) {
     const errors = {};
 

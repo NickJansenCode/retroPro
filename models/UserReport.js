@@ -1,6 +1,10 @@
+// NPM IMPORTS //
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+/**
+ * Defines the document schema for a User Report.
+ */
 const UserReportSchema = new Schema({
     reporter: {
         type: Schema.Types.ObjectId, ref: 'users',
@@ -23,4 +27,6 @@ const UserReportSchema = new Schema({
     }
 });
 
+// Export the document schema. //
+// eslint-disable-next-line no-undef
 module.exports = UserReport = mongoose.model('userreport', UserReportSchema);

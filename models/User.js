@@ -1,6 +1,10 @@
+// NPM IMPORTS //
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+/**
+ * Defines the document schema for a User.
+ */
 const UserSchema = new Schema({
     gameCollection: [{
         type: Schema.Types.ObjectId, ref: 'game',
@@ -71,4 +75,6 @@ const UserSchema = new Schema({
     }],
 });
 
+// Export the document schema. //
+// eslint-disable-next-line no-undef
 module.exports = User = mongoose.model('users', UserSchema);

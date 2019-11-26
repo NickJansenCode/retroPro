@@ -18,7 +18,6 @@ const List = require("../../models/List");
 // eslint-disable-next-line no-unused-vars
 const Game = require('../../models/Game');
 // eslint-disable-next-line no-unused-vars
-const Collection = require('../../models/Collection');
 const ProfileComment = require("../../models/ProfileComment")
 const PasswordRecovery = require('../../models/PasswordRecovery');
 const GameComment = require("../../models/GameComment")

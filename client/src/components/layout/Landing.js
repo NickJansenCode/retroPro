@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-import landing from "../../img/landing.jpg";
+import landing from "../../img/retroProLogo.png";
 import styles from "../css/landing.module.css"
 
 export default class Landing extends Component {

@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Link, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import styles from '../css/navbar.module.css';
+import landing from "../../img/retroProLogo.png";
 import PropTypes from "prop-types";
 import { logoutUser } from "../../actions/authActions";
 import Axios from "axios";
@@ -92,7 +93,7 @@ class Navbar extends Component {
         return (
             <nav className="navbar navbar-dark navbar-expand-md bg-primary">
                 <a className="navbar-brand" href="/">
-                    retroPro Logo Here
+                    <img src={landing} height="50px" />
                 </a>
                 <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
                     <span className="navbar-toggler-icon"></span>

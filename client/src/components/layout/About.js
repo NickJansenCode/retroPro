@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-import landing from "../../img/landing.jpg";
+import landing from "../../img/retroProLogo.png";
 
 export default class Register extends Component {
     render() {

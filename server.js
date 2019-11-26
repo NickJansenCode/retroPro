@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 // NPM IMPORTS //
 const express = require('express');
 const mongoose = require('mongoose');
@@ -27,11 +28,10 @@ const app = express()
 require('./config/passport')(passport);
 
 // Connect to mongoDB. //
-mongoose
-    .connect(process.env.MONGOURI, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-    })
+mongoose.connect(process.env.MONGOURI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+})
     .then(() => console.log('MongoDB succesfully connected.'))
     .catch((err) => console.log(err));
 

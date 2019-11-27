@@ -33,7 +33,6 @@ if (process.env.ENVIRONMENT == 'test') {
         useNewUrlParser: true,
         useUnifiedTopology: true,
     })
-        .then(() => console.log('MongoDB succesfully connected.'))
         .catch((err) => console.log(err));
 }
 else {

@@ -358,7 +358,7 @@ router.post('/updatePassword', (req, res) => {
 
     User.findOne({ email }).then((user) => {
         if (!user) {
-            res.status(400).json('User not found.');
+            return res.status(400).json('User not found.');
         }
 
         bcrypt.genSalt(10, (err, salt) => {

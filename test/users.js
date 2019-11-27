@@ -1,4 +1,5 @@
 /* eslint-disable no-undef */
+process.env.ENVIRONMENT = 'test';
 // NPM IMPORTS //
 const mongoose = require("mongoose")
 const chai = require('chai');
@@ -20,8 +21,6 @@ const UserReport = require("../models/UserReport")
 const Friendship = require("../models/Friendship")
 
 
-// During the test the env variable is set to test. //
-process.env.NODE_ENV = 'test';
 chai.use(chaiHttp);
 const should = chai.should()
 const expect = chai.expect()

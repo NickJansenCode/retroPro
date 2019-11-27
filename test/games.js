@@ -1,4 +1,5 @@
 /* eslint-disable no-undef */
+process.env.ENVIRONMENT = 'test';
 // NPM IMPORTS //
 const mongoose = require("mongoose")
 const chai = require('chai');
@@ -19,40 +20,38 @@ const Review = require("../models/Review")
 const UserReport = require("../models/UserReport")
 const Friendship = require("../models/Friendship")
 
-
-// During the test the env variable is set to test. //
-process.env.NODE_ENV = 'test';
 chai.use(chaiHttp);
 const should = chai.should()
 const expect = chai.expect()
 
 describe('Games', () => {
-    // beforeEach((done) => { //Before each test we empty the database
-    //     // Book.remove({}, (err) => {
-    //     //     done();
-    //     // });
-})
+    beforeEach((done) => { //Before each test we empty the database
+        Game.deleteMany({}, (err) => {
+            done();
+        });
+    })
 
 
-describe('/POST Submit', () => {
-    it('Cover Art must be an image URL', (done) => {
-        chai.request(server)
-            .post('/api/games/submit')
-            .send({
-                name: "",
-                coverart: "notanimageurl",
-                year: "",
-                platform: "",
-                description: "",
-            })
-            .end((err, res) => {
-                let responseData = JSON.parse(err.response.error.text)
-                res.should.have.status(400);
-                res.body.should.be.a('object');
-                err.should.have.property("response")
-                err.response.should.have.property("error")
-                responseData.should.have.property("coverart").eql("Cover Art field must be an image URL.")
-                done();
-            });
+    describe('/POST Submit', () => {
+        it('Cover Art must be an image URL', (done) => {
+            chai.request(server)
+                .post('/api/games/submit')
+                .send({
+                    name: "",
+                    coverart: "notanimageurl",
+                    year: "",
+                    platform: "",
+                    description: "",
+                })
+                .end((err, res) => {
+                    let responseData = JSON.parse(err.response.error.text)
+                    res.should.have.status(400);
+                    res.body.should.be.a('object');
+                    err.should.have.property("response")
+                    err.response.should.have.property("error")
+                    responseData.should.have.property("coverart").eql("Cover Art field must be an image URL.")
+                    done();
+                });
+        });
     });
-});
+})

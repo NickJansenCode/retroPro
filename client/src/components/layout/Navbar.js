@@ -33,6 +33,15 @@ class Navbar extends Component {
                         friendRequests: res.data
                     })
                 })
+
+            Axios.get("/api/users/isUserAdmin/" + this.props.auth.user.id)
+                .then(res => {
+                    if (res.data === true) {
+                        this.setState({
+                            isAdmin: true
+                        })
+                    }
+                })
         }
     }
 
@@ -40,14 +49,14 @@ class Navbar extends Component {
         if (this.props.auth.isAuthenticated) {
             Axios.get("/api/users/isUserBannedOrDeleted/" + nextProps.auth.user.id)
                 .then(res => {
-                    if (res.data == true) {
+                    if (res.data === true) {
                         this.props.logoutUser()
                     }
                 })
 
-            Axios.get("/api/users/isUserAdmin/" + nextProps.auth.user.id)
+            Axios.get("/api/users/isUserAdmin/" + this.props.auth.user.id)
                 .then(res => {
-                    if (res.data == true) {
+                    if (res.data === true) {
                         this.setState({
                             isAdmin: true
                         })

@@ -511,6 +511,12 @@ router.post("/updateUser", (req, res) => {
                     path: 'commenter'
                 }
             })
+            .populate({
+                path: "lists",
+                populate: {
+                    path: "items"
+                }
+            })
             .then((data) => {
                 res.status(200).json({ "user": data });
             });

@@ -460,7 +460,7 @@ router.post('/login', (req, res) => {
                         // eslint-disable-next-line no-undef
                         process.env.JWTSECRET,
                         {
-                            expiresIn: 31556926, // 1 year in seconds
+                            expiresIn: 14400, // 4 hours in seconds
                         },
                         (err, token) => {
                             res.json({

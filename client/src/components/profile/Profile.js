@@ -283,6 +283,18 @@ class Profile extends Component {
                         {
                             this.state.friendshipStatus == "Pending" &&
                             <button className="btn btn-primary" disabled>Friendship Pending</button>
+                            || this.state.friendshipStatus == "PendingAccept" &&
+                            <div className="row">
+                                <button
+                                    className="btn btn-primary btn-large w-100"
+                                    onClick={this.acceptFriendRequest}
+                                >
+                                    Accept Friend Request
+                                            </button>
+                                <button className="btn btn-danger btn-large w-100 mt-2" onClick={this.rejectFriendRequest}>
+                                    Reject Friend Request
+                                            </button>
+                            </div>
                             ||
                             <button className="btn btn-primary" onClick={this.sendFriendRequest}>Add As A Friend</button>
                         }
@@ -519,7 +531,7 @@ class Profile extends Component {
                                     || this.state.friendshipStatus == "Friends" &&
                                     <div className="row">
                                         <button
-                                            onClick={this.removeFromFriends}
+                                            onClick={this.removeFromFriends(this.state.user._id)}
                                             className="btn btn-warning btn-large w-100">
                                             Remove From Friends
                                         </button>

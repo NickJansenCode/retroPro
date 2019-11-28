@@ -30,6 +30,7 @@ class Profile extends Component {
             editMode: false,
             authUserProfilePicture: "",
             friendshipStatus: "",
+            viewerIsAdmin: false,
             errors: {}
         };
     }
@@ -61,6 +62,15 @@ class Profile extends Component {
                 this.setState({
                     authUserProfilePicture: res.data
                 })
+            })
+
+        axios.get("/api/users/isUserAdmin/" + this.props.auth.user.id)
+            .then(res => {
+                if (res.data == true) {
+                    this.setState({
+                        viewerIsAdmin: true
+                    })
+                }
             })
     }
 
@@ -260,7 +270,7 @@ class Profile extends Component {
 
     render() {
 
-        if (this.state.user.private && this.state.friendshipStatus != "Friends" && this.state.user._id != this.props.auth.user.id && this.props.auth.user.role != "Admin") {
+        if (this.state.user.private && this.state.friendshipStatus != "Friends" && this.state.user._id != this.props.auth.user.id && !this.state.viewerIsAdmin) {
             return (
                 <div className="container">
                     <div className="row">

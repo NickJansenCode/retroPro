@@ -172,6 +172,45 @@ router.get("/getList/:listID", (req, res) => {
         })
 })
 
+/**
+ * @route GET /api/users/isUserAdmin/:id
+ * @desc Route serving a GET request for determining if a user
+ * is an admin.
+ * @returns Boolean whether or not the user is an admin.
+ */
+router.get("/isUserAdmin/:id", (req, res) => {
+    User.findOne({
+        _id: req.params.id
+    })
+        .populate("role")
+        .then(user => {
+            if (user.role.name == "Admin") {
+                return res.status(200).json(true)
+            }
+            return res.status(200).json(false)
+        })
+})
+
+/**
+ * @route GET /api/users/isUserBannedOrDeleted/:id
+ * @desc Route serving a GET request for determining if a user
+ * is banned or has had their account deleted.
+ * @returns Boolean whether or not the user is banned or deleted.
+ */
+router.get("/isUserBannedOrDeleted/:id", (req, res) => {
+    User.findOne({
+        _id: req.params.id
+    })
+        .then(user => {
+            if (!user || user.isbanned) {
+                return res.status(200).json(true)
+            }
+            return res.status(200).json(false)
+        })
+})
+
+
+
 //...................................................................................................................................
 //.PPPPPPPPP.....OOOOOOO......SSSSSSS....STTTTTTTTTT..... RRRRRRRRR.....OOOOOOO.....OUUU...UUUU..UTTTTTTTTTTTEEEEEEEEEE..SSSSSSS.....
 //.PPPPPPPPPP...OOOOOOOOOO...OSSSSSSSS...STTTTTTTTTT..... RRRRRRRRRR...OOOOOOOOOO...OUUU...UUUU..UTTTTTTTTTTTEEEEEEEEEE.ESSSSSSSS....
@@ -358,7 +397,7 @@ router.post('/updatePassword', (req, res) => {
 
     User.findOne({ email }).then((user) => {
         if (!user) {
-            res.status(400).json('User not found.');
+            return res.status(400).json('User not found.');
         }
 
         bcrypt.genSalt(10, (err, salt) => {
@@ -421,7 +460,7 @@ router.post('/login', (req, res) => {
                         // eslint-disable-next-line no-undef
                         process.env.JWTSECRET,
                         {
-                            expiresIn: 31556926, // 1 year in seconds
+                            expiresIn: 14400, // 4 hours in seconds
                         },
                         (err, token) => {
                             res.json({

@@ -27,13 +27,24 @@ const app = express()
     )
 require('./config/passport')(passport);
 
-// Connect to mongoDB. //
-mongoose.connect(process.env.MONGOURI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-})
-    .then(() => console.log('MongoDB succesfully connected.'))
-    .catch((err) => console.log(err));
+if (process.env.ENVIRONMENT == 'test') {
+    // Connect to mongoDB test database. //
+    mongoose.connect(process.env.MONGOTESTURI, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+    })
+        .catch((err) => console.log(err));
+}
+else {
+    // Connect to mongoDB. //
+    mongoose.connect(process.env.MONGOURI, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+    })
+        .then(() => console.log('MongoDB succesfully connected.'))
+        .catch((err) => console.log(err));
+}
+
 
 // Register API Routes //
 app.use('/api/users', users);

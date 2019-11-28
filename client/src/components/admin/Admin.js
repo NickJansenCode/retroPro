@@ -23,10 +23,12 @@ class Admin extends Component {
      */
     componentDidMount() {
 
-        // If someone that isn't an admin tries to access this url, redirect them to the site home. //
-        if (this.props.auth.user.role != "Admin") {
-            this.props.history.push("/")
-        }
+        axios.get("/api/users/isUserAdmin/" + this.props.auth.user.id)
+            .then(res => {
+                if (res.data == false) {
+                    this.props.history.push("/")
+                }
+            })
 
         // Load active reports for viewing. //
         axios.get("/api/reports/getActiveReports")

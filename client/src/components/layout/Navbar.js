@@ -16,6 +16,7 @@ class Navbar extends Component {
             searchQuery: "",
             emptySearch: false,
             friendRequestCount: 0,
+            isAdmin: false,
             friendRequests: []
         }
     }
@@ -33,6 +34,27 @@ class Navbar extends Component {
                     })
                 })
         }
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (this.props.auth.isAuthenticated) {
+            Axios.get("/api/users/isUserBannedOrDeleted/" + nextProps.auth.user.id)
+                .then(res => {
+                    if (res.data == true) {
+                        this.props.logoutUser()
+                    }
+                })
+
+            Axios.get("/api/users/isUserAdmin/" + nextProps.auth.user.id)
+                .then(res => {
+                    if (res.data == true) {
+                        this.setState({
+                            isAdmin: true
+                        })
+                    }
+                })
+        }
+
     }
 
     onChange = e => {
@@ -186,7 +208,7 @@ class Navbar extends Component {
                                 <Link className="dropdown-item" to="/FindStore">Find A Store</Link>
                                 <Link className="dropdown-item" to="/Settings">Settings</Link>
                                 <Link className="dropdown-item" to="/Submit">Submit A Game</Link>
-                                {this.props.auth.user.role == "Admin" &&
+                                {this.state.isAdmin &&
                                     <Link className="dropdown-item" to="/Admin">Admin Dashboard</Link>
                                 }
                                 <Link className="dropdown-item" to="/" onClick={this.onLogoutClick}>
